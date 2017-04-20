@@ -36,19 +36,21 @@
             throw new TypeError("deletionCost must be a function.");
         }
 
-        var m = new Array(s1.length+1);
+        var s1Length = s1.length,
+            s2Length = s2.length,
+            m = new Array(s1Length+1);
         
-        for (var i=0; i <= s1.length; i++) {
-            m[i] = new Array(s2.length+1);
+        for (var i=0; i <= s1Length; i++) {
+            m[i] = new Array(s2Length+1);
             m[i][0] = i;
         }
 
-        for (var j=1; j <= s2.length; j++) {
+        for (var j=1; j <= s2Length; j++) {
             m[0][j] = j;
         }
 
-        for (i=1; i <= s1.length; i++) {
-            for (j=1; j <= s2.length; j++) {
+        for (i=1; i <= s1Length; i++) {
+            for (j=1; j <= s2Length; j++) {
                 var alignment = m[i-1][j-1] + substitutionCost(s1[i-1], s2[j-1]);
                 var insertion = m[i][j-1] + insertionCost(s2[j-1]);
                 var deletion = m[i-1][j] + deletionCost(s1[i-1]);
@@ -57,7 +59,7 @@
             }
         }
 
-        return m[s1.length][s2.length];
+        return m[s1Length][s2Length];
     }
 
     function alignPairwise(s1, s2, substitutionCost, insertionCost, deletionCost) {
@@ -84,13 +86,15 @@
                 "Insertion": 1,
                 "Deletion": 2
             },
-            m = new Array(s1.length+1),
-            steps = new Array(s1.length+1);
+            s1Length = s1.length,
+            s2Length = s2.length,
+            m = new Array(s1Length+1),
+            steps = new Array(s1Length+1);
         
-        for (var i=0; i <= s1.length; i++) {
-            m[i] = new Array(s2.length+1);
+        for (var i=0; i <= s1Length; i++) {
+            m[i] = new Array(s2Length+1);
             m[i][0] = i;
-            steps[i] = new Array(s2.length+1);
+            steps[i] = new Array(s2Length+1);
 
             if (i === 0) {
                 steps[i][0] = STEP.Alignment;
@@ -99,13 +103,13 @@
             }
         }
 
-        for (var j=1; j <= s2.length; j++) {
+        for (var j=1; j <= s2Length; j++) {
             m[0][j] = j;
             steps[0][j] = STEP.Insertion;
         }
 
-        for (i=1; i <= s1.length; i++) {
-            for (j=1; j <= s2.length; j++) {
+        for (i=1; i <= s1Length; i++) {
+            for (j=1; j <= s2Length; j++) {
                 var alignment = m[i-1][j-1] + substitutionCost(s1[i-1], s2[j-1]);
                 var insertion = m[i][j-1] + insertionCost(s2[j-1]);
                 var deletion = m[i-1][j] + deletionCost(s1[i-1]);
@@ -122,8 +126,8 @@
             }
         }
 
-        i = s1.length;
-        j = s2.length;
+        i = s1Length;
+        j = s2Length;
         var alignedSequence = [];
 
         while(i > 0 || j > 0) {
@@ -141,9 +145,7 @@
             }
         }
 
-        alignedSequence.reverse();
-
-        return alignedSequence;
+        return alignedSequence.reverse();
     }
 
     // @TODO
@@ -151,16 +153,18 @@
     // };
 
     function commonSubsequenceLength(alignment) {
-        var counter = 0;
+        var counter = 0,
+            alignmentLength = alignment.length;
 
-        for (var i=0; i < alignment.length; i++) {
+        for (var i=0; i < alignmentLength; i++) {
             var common = true,
                 first = alignment[i][0];
 
             if (first === null) {
                 common = false;
             } else {
-                for (var j=1; j < alignment[i].length; j++) {
+                var alignmentColumnLength = alignment[i].length;
+                for (var j=1; j < alignmentColumnLength; j++) {
                     if (alignment[i][j] === null) {
                         common = false;
                         break;
