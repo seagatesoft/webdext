@@ -183,6 +183,7 @@
         return counter;
     }
 
+    // exports
     Webdext.Sequal = {
         editDistance: editDistance,
         alignPairwise: alignPairwise,
