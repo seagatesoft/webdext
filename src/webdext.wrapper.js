@@ -5,7 +5,6 @@
         this.dataRecordXPath = dataRecordXPath;
         this.dataItemXPaths = dataItemXPaths;
     };
-
     Wrapper.prototype.extract = function() {
         var dataRecords = [];
         var dataRecordElements = Webdext.evaluateXpath(this.dataRecordXPath);
@@ -31,5 +30,6 @@
         return dataRecords;
     };
 
+    // exports
     Webdext.Wrapper = Wrapper;
 }).call(this);

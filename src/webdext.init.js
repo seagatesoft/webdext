@@ -31,5 +31,7 @@
         evaluateXpath: evaluateXpath
     };
     Object.defineProperty(Webdext, "version", {value: "0.0.1"});
+
+    // exports
     this.Webdext = Webdext;
 }).call(this);
