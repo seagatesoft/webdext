@@ -617,12 +617,18 @@
         wImageNodeSimilarity: wImageNodeSimilarity,
         wNodeSimilarity: wNodeSimilarity,
         memoizedWNodeSimilarity: memoizedWNodeSimilarity,
+        // @TODO add test
         wTreeSimilarity: wTreeSimilarity,
+        // @TODO add test
         memoizedWTreeSimilarity: memoizedWTreeSimilarity,
 
+        // @TODO add test
         clusterSimilarity: clusterSimilarity,
+        // @TODO add test
         cluster: cluster,
+        // @TODO add test
         clusterWNodes: clusterWNodes,
+        // @TODO add test
         filterTreeClusters: filterTreeClusters,
     };
 }).call(this);
