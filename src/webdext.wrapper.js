@@ -7,7 +7,7 @@
     };
     Wrapper.prototype.extract = function() {
         var dataRecords = [];
-        var dataRecordElements = Webdext.evaluateXpath(this.dataRecordXPath);
+        var dataRecordElements = Webdext.evaluateXPath(this.dataRecordXPath);
         var dataRecordsLength = dataRecordElements.length;
 
         for (var i=0; i < dataRecordsLength; i++) {
@@ -16,7 +16,7 @@
 
             for (var dataItemName in this.dataItemXPaths) {
                 var dataItemXPath = this.dataItemXPaths[dataItemName];
-                var dataItem = Webdext.evaluateXpath(dataItemXPath, dataRecordElement);
+                var dataItem = Webdext.evaluateXPath(dataItemXPath, dataRecordElement);
 
                 if (dataItem.length > 0) {
                     dataRecord[dataItemName] = dataItem[0];

@@ -258,7 +258,7 @@
             nodetest = "text()";
         }
 
-        var elements = Webdext.evaluateXpath("./" + nodetest, node.parentNode);
+        var elements = Webdext.evaluateXPath("./" + nodetest, node.parentNode);
         var elementsLength =  elements.length, position = 0;
 
         for (var i=0; i < elementsLength; i++) {

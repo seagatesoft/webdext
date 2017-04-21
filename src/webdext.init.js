@@ -1,7 +1,7 @@
 ;(function(undefined) {
     "use strict";
 
-    function evaluateXpath(xpath, contextNode) {
+    function evaluateXPath(xpath, contextNode) {
         var doc = document, found, out = [], next;
 
         if (contextNode && typeof contextNode === "object") {
@@ -28,7 +28,7 @@
     }
 
     var Webdext = {
-        evaluateXpath: evaluateXpath
+        evaluateXPath: evaluateXPath
     };
     Object.defineProperty(Webdext, "version", {value: "0.0.1"});
 
