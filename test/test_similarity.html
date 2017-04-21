@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test Similarity</title>
+ 
+  <link rel="stylesheet" href="qunit.css">
+  <style>
+.textNodeElement {
+    color: red;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    text-decoration: underline;
+}
+.imageElement {
+    width: 300px;
+    height: 400px;
+}
+  </style>
+  <script src="qunit.js"></script>
+  <script src="../src/webdext.init.js"></script>
+  <script src="../src/webdext.sequal.js"></script>
+  <script src="../src/webdext.model.js"></script>
+  <script src="../src/webdext.similarity.js"></script>
+  <script src="test_similarity.js"></script>
+</head>
+<body>
+ 
+<div id="qunit"></div>
+<div id="qunit-fixture">
+    <div id="main">
+        <a id="hyperlinkElement1" href="https://www.amazon.com/dp/1118531647">
+            <img id="imageElement1" class="imageElement" src="https://images-na.ssl-images-amazon.com/images/I/51JwcqaSYPL._AC_US160_.jpg">
+            <span id="textNodeElement1" class="textNodeElement">A Smarter Way to Learn JavaScript: The new approach that uses technology to cut your effort in half</span>
+        </a>
+        <a id="hyperlinkElement2" href="https://www.amazon.com/dp/0596805527">
+            <img id="imageElement2" class="imageElement" src="https://images-na.ssl-images-amazon.com/images/I/51WD-F3GobL._AC_US160_.jpg">
+            <span id="textNodeElement2" class="textNodeElement">JavaScript: The Definitive Guide: Activate Your Web Pages (Definitive Guides)</span>
+        </a>
+    </div>
+</div>
+</body>
+</html>
