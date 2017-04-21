@@ -699,7 +699,7 @@
                             break;
                         }
                     }
-                } else if (child.dataType === DATA_TYPE.TEXT_NODE) {
+                } else if (child.dataType === DATA_TYPE.TEXT) {
                     index++;
                     if (index === step.position) {
                         wNode = child;
