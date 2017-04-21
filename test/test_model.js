@@ -13,6 +13,12 @@ QUnit.test("SimpleMap", function(assert) {
     assert.strictEqual(map.get("telo"), undefined);
     assert.strictEqual(map.size, 0);
     assert.notOk(map.has("telo"));
+
+    map.set("telo", "bakar");
+    map.clear();
+    assert.strictEqual(map.get("telo"), undefined);
+    assert.strictEqual(map.size, 0);
+    assert.notOk(map.has("telo"));
 });
 
 QUnit.module("normVector");
@@ -34,6 +40,12 @@ var tfv2 = {
     "Set": 1
 };
 QUnit.test("normVector", function(assert) {
+    assert.strictEqual(Webdext.Model.normVector(tfv1), Math.sqrt(5));
+    assert.strictEqual(Webdext.Model.normVector(tfv2), Math.sqrt(8));
+});
+
+QUnit.module("parseUrl");
+QUnit.test("parseUrl", function(assert) {
     assert.strictEqual(Webdext.Model.normVector(tfv1), Math.sqrt(5));
     assert.strictEqual(Webdext.Model.normVector(tfv2), Math.sqrt(8));
 });
@@ -382,6 +394,46 @@ QUnit.test("createWTree", function(assert) {
         1
     );
     assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildIndex(tree.children[1].children[1].children[0].children[0]),
+        1
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildIndex(tree.children[1].children[1].children[0].children[1]),
+        2
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildIndex(tree.children[1].children[1].children[0].children[2]),
+        3
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChild(1).valueOf(),
+        "/html[1]/body[1]/div[2]/div[1]/span[1]"
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChild(2).valueOf(),
+        "/html[1]/body[1]/div[2]/div[1]/a[1]"
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChild(3).valueOf(),
+        "/html[1]/body[1]/div[2]/div[1]/img[1]"
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildrenSubset(1, 1).length,
+        1
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildrenSubset(1, 2).length,
+        2
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildrenSubset(2, 3).length,
+        2
+    );
+    assert.strictEqual(
+        tree.children[1].children[1].children[0].getChildrenSubset(1, 3).length,
+        3
+    );
+    assert.strictEqual(
         tree.children[1].children[1].children[0].getLeafNodes().length,
         4
     );
@@ -588,4 +640,24 @@ QUnit.test("createWTree", function(assert) {
         tree.children[1].children[1].children[0].children[2].getChildrenCount(),
         0
     );
+});
+
+QUnit.module("findWNode");
+QUnit.test("findWNode", function(assert) {
+   var wTree = Webdext.Model.createWTree();
+
+   var elementNode = Webdext.evaluateXPath("//*[@id='main']")[0];
+   var wElementNode = Webdext.Model.findWNode(elementNode, wTree);
+   assert.ok(elementNode.isSameNode(Webdext.evaluateXPath(wElementNode.valueOf())[0]));
+   assert.strictEqual(wElementNode.tagName, elementNode.nodeName);
+
+   var textNode = Webdext.evaluateXPath("//*[@id='textNodeElement']/text()")[0];
+   var wTextNode = Webdext.Model.findWNode(textNode, wTree);
+   assert.ok(textNode.isSameNode(Webdext.evaluateXPath(wTextNode.valueOf())[0]));
+   assert.strictEqual(wTextNode.textContent, textNode.nodeValue);
+
+   var imageNode = Webdext.evaluateXPath("//*[@id='imageElement']")[0];
+   var wImageNode = Webdext.Model.findWNode(imageNode, wTree);
+   assert.ok(imageNode.isSameNode(Webdext.evaluateXPath(wImageNode.valueOf())[0]));
+   assert.strictEqual(wImageNode.src.url, imageNode.src);
 });
