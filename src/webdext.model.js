@@ -1,6 +1,9 @@
 ;(function(undefined) {
     "use strict";
 
+    // imports
+    var evaluateXPath = Webdext.evaluateXPath;
+
     var DATA_TYPE = {
         TEXT: 0,
         HYPERLINK: 1,
@@ -258,7 +261,7 @@
             nodetest = "text()";
         }
 
-        var elements = Webdext.evaluateXPath("./" + nodetest, node.parentNode);
+        var elements = evaluateXPath("./" + nodetest, node.parentNode);
         var elementsLength =  elements.length, position = 0;
 
         for (var i=0; i < elementsLength; i++) {
