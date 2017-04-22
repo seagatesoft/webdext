@@ -568,17 +568,17 @@ QUnit.test("memoizedWNodeSimilarity", function(assert) {
     var wTextNode2 = Webdext.Model.createWNode(textNode2);
 
     assert.ok(
-        Math.abs(Webdext.Similarity.memoizedWNodeSimilarity(wTextNode1, wTextNode1) - 1) < 0.0000001
+        Math.abs(Webdext.Similarity.memoizedWTextNodeSimilarity(wTextNode1, wTextNode1) - 1) < 0.0000001
     ); 
     assert.ok(
-        Math.abs(Webdext.Similarity.memoizedWNodeSimilarity(wTextNode2, wTextNode2) - 1) < 0.0000001
+        Math.abs(Webdext.Similarity.memoizedWTextNodeSimilarity(wTextNode2, wTextNode2) - 1) < 0.0000001
     );
     assert.strictEqual(
-        Webdext.Similarity.memoizedWNodeSimilarity(wTextNode1, wTextNode2),
+        Webdext.Similarity.memoizedWTextNodeSimilarity(wTextNode1, wTextNode2),
         0.818269354221901
     );
     assert.strictEqual(
-        Webdext.Similarity.memoizedWNodeSimilarity(wTextNode2, wTextNode1),
+        Webdext.Similarity.memoizedWTextNodeSimilarity(wTextNode2, wTextNode1),
         0.818269354221901
     );
 
@@ -590,17 +590,17 @@ QUnit.test("memoizedWNodeSimilarity", function(assert) {
     wHyperlinkNode2 = wHyperlinkNode2.children[0];
 
     assert.ok(
-        Math.abs(Webdext.Similarity.memoizedWNodeSimilarity(wHyperlinkNode1, wHyperlinkNode1) - 1) < 0.001
+        Math.abs(Webdext.Similarity.memoizedWHyperlinkNodeSimilarity(wHyperlinkNode1, wHyperlinkNode1) - 1) < 0.001
     ); 
     assert.ok(
-        Math.abs(Webdext.Similarity.memoizedWNodeSimilarity(wHyperlinkNode2, wHyperlinkNode2) - 1) < 0.001
+        Math.abs(Webdext.Similarity.memoizedWHyperlinkNodeSimilarity(wHyperlinkNode2, wHyperlinkNode2) - 1) < 0.001
     );
     assert.strictEqual(
-        Webdext.Similarity.memoizedWNodeSimilarity(wHyperlinkNode1, wHyperlinkNode2),
+        Webdext.Similarity.memoizedWHyperlinkNodeSimilarity(wHyperlinkNode1, wHyperlinkNode2),
         0.931740614334471
     );
     assert.strictEqual(
-        Webdext.Similarity.memoizedWNodeSimilarity(wHyperlinkNode2, wHyperlinkNode1),
+        Webdext.Similarity.memoizedWHyperlinkNodeSimilarity(wHyperlinkNode2, wHyperlinkNode1),
         0.931740614334471
     );
 
@@ -610,17 +610,17 @@ QUnit.test("memoizedWNodeSimilarity", function(assert) {
     var wImageNode2 = Webdext.Model.createWNode(imageNode2);
 
     assert.ok(
-        Math.abs(Webdext.Similarity.memoizedWNodeSimilarity(wImageNode1, wImageNode1) - 1) < 0.0000001
+        Math.abs(Webdext.Similarity.memoizedWImageNodeSimilarity(wImageNode1, wImageNode1) - 1) < 0.0000001
     ); 
     assert.ok(
-        Math.abs(Webdext.Similarity.memoizedWNodeSimilarity(wImageNode2, wImageNode2) - 1) < 0.0000001
+        Math.abs(Webdext.Similarity.memoizedWImageNodeSimilarity(wImageNode2, wImageNode2) - 1) < 0.0000001
     );
     assert.strictEqual(
-        Webdext.Similarity.memoizedWNodeSimilarity(wImageNode1, wImageNode2),
+        Webdext.Similarity.memoizedWImageNodeSimilarity(wImageNode1, wImageNode2),
         0.9640283872365784
     );
     assert.strictEqual(
-        Webdext.Similarity.memoizedWNodeSimilarity(wImageNode2, wImageNode1),
+        Webdext.Similarity.memoizedWImageNodeSimilarity(wImageNode2, wImageNode1),
         0.9640283872365784
     );
 });

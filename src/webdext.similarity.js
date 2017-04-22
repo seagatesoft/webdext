@@ -18,7 +18,10 @@
         IMAGE: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.TAG_PATH + WEIGHTS.RECTANGLE_SIZE
     };
     var THRESHOLDS = {
-        LEAF_NODE: 0.7,
+        ELEMENT_NODE: 0.99,
+        TEXT_NODE: 0.75,
+        HYPERLINK_NODE: 0.9,
+        IMAGE_NODE: 0.9,
         TREE: 0.5,
     };
 
@@ -236,10 +239,20 @@
         }
     }
 
-    var wNodeSimilarityMap = new SimilarityMap(wNodeSimilarity);
+    var wTextNodeSimilarityMap = new SimilarityMap(wTextNodeSimilarity);
+    var wHyperlinkNodeSimilarityMap = new SimilarityMap(wHyperlinkNodeSimilarity);
+    var wImageNodeSimilarityMap = new SimilarityMap(wImageNodeSimilarity);
 
-    function memoizedWNodeSimilarity(wNode1, wNode2) {
-        return wNodeSimilarityMap.get(wNode1, wNode2);
+    function memoizedWTextNodeSimilarity(wNode1, wNode2) {
+        return wTextNodeSimilarityMap.get(wNode1, wNode2);
+    }
+
+    function memoizedWHyperlinkNodeSimilarity(wNode1, wNode2) {
+        return wHyperlinkNodeSimilarityMap.get(wNode1, wNode2);
+    }
+
+    function memoizedWImageNodeSimilarity(wNode1, wNode2) {
+        return wImageNodeSimilarityMap.get(wNode1, wNode2);
     }
 
     /*
@@ -394,11 +407,7 @@
         return clusters;
     }
 
-    function clusterWNodes(wNodeSet, similarityThreshold) {
-        if (typeof similarityThreshold === "undefined") {
-            similarityThreshold = THRESHOLDS.LEAF_NODE;
-        }
-
+    function clusterWNodes(wNodeSet) {
         var wTextNodes = [],
             wHyperlinkNodes = [],
             wImageNodes = [],
@@ -419,47 +428,47 @@
             }
         }
 
+        if (wElementNodes.length > 0) {
+            var elementClusters = cluster(
+                wElementNodes,
+                THRESHOLDS.ELEMENT_NODE,
+                clusterSimilarity,
+                wElementNodeSimilarity
+            );
+        }
+
         if (wTextNodes.length > 0) {
             var textClusters = cluster(
                 wTextNodes,
-                similarityThreshold,
+                THRESHOLDS.TEXT_NODE,
                 clusterSimilarity,
-                memoizedWNodeSimilarity
+                memoizedWTextNodeSimilarity
             );
         }
 
         if (wHyperlinkNodes.length > 0) {
             var hyperlinkClusters = cluster(
                 wHyperlinkNodes,
-                similarityThreshold,
+                THRESHOLDS.HYPERLINK_NODE,
                 clusterSimilarity,
-                memoizedWNodeSimilarity
+                memoizedWHyperlinkNodeSimilarity
             );
         }
 
         if (wImageNodes.length > 0) {
             var imageClusters = cluster(
                 wImageNodes,
-                similarityThreshold,
+                THRESHOLDS.IMAGE_NODE,
                 clusterSimilarity,
-                memoizedWNodeSimilarity
-            );
-        }
-
-        if (wElementNodes.length > 0) {
-            var elementClusters = cluster(
-                wElementNodes,
-                similarityThreshold,
-                clusterSimilarity,
-                memoizedWNodeSimilarity
+                memoizedWImageNodeSimilarity
             );
         }
 
         var clusters = [];
+        clusters.push.apply(clusters, elementClusters);
         clusters.push.apply(clusters, textClusters);
         clusters.push.apply(clusters, hyperlinkClusters);
         clusters.push.apply(clusters, imageClusters);
-        clusters.push.apply(clusters, elementClusters);
 
         return clusters;
     }
@@ -566,7 +575,7 @@
         return filteredClusters;
     }
 
-    function clusterWTrees(wNodeSet, similarityThreshold) {
+    function clusterWTrees(wNodeSet) {
         var parent = wNodeSet[0].parent;
         var clusters = treeClusterMap.get(parent);
 
@@ -578,13 +587,9 @@
             }
         }
 
-        if (typeof similarityThreshold === "undefined") {
-            similarityThreshold = THRESHOLDS.TREE;
-        }
-
         clusters = cluster(
             wNodeSet,
-            similarityThreshold,
+            THRESHOLDS.TREE,
             clusterSimilarity,
             memoizedWTreeSimilarity
         );
@@ -616,7 +621,9 @@
         wHyperlinkNodeSimilarity: wHyperlinkNodeSimilarity,
         wImageNodeSimilarity: wImageNodeSimilarity,
         wNodeSimilarity: wNodeSimilarity,
-        memoizedWNodeSimilarity: memoizedWNodeSimilarity,
+        memoizedWTextNodeSimilarity: memoizedWTextNodeSimilarity,
+        memoizedWHyperlinkNodeSimilarity: memoizedWHyperlinkNodeSimilarity,
+        memoizedWImageNodeSimilarity: memoizedWImageNodeSimilarity,
         // @TODO add test
         wTreeSimilarity: wTreeSimilarity,
         // @TODO add test
