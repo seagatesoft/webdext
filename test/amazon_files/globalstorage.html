@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)https://ciuvo.com/ciuvo/globalstorage?version=2.0.4 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"></head><body>
+    <script type="text/javascript">
+    (function() {
+
+        function migrateCookies(names) {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                var eqPos = cookie.indexOf("=");
+                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                if (names.indexOf(name) > -1) {
+                    var value = eqPos > -1 ? cookie.substr(eqPos + 1) : "";
+                    document.cookie = name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                    localStorage.setItem(name, value);
+                }
+            }
+        }
+
+        function handleRequest(event) {
+            var data = JSON.parse(event.data),
+                response = {id: data.id, key: data.key};
+
+            switch (data.method) {
+                case "getAll":
+                    response.value = {};
+                    for (var key in localStorage) {
+                        response.value[key] = localStorage.getItem(key);
+                    }
+                    break;
+                case "getItem":
+                    response.value = localStorage.getItem(data.key);
+                    break;
+                case "setItem":
+                    localStorage.setItem(data.key, data.value);
+                    break;
+                case "removeItem":
+                    localStorage.removeItem(data.key);
+                    break;
+                case "length":
+                    response.length = localStorage.length;
+                    break;
+                default:
+                    break;
+            }
+            event.source.postMessage(JSON.stringify(response), event.origin);
+        }
+
+        if(window.addEventListener){
+            window.addEventListener("message", handleRequest, false);
+        } else if (window.attachEvent){
+            window.attachEvent("onmessage", handleRequest);
+        }
+        
+    })();
+    </script>
+
+
+</body></html>
