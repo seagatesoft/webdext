@@ -19,7 +19,7 @@
     };
     var THRESHOLDS = {
         ELEMENT_NODE: 0.99,
-        TEXT_NODE: 0.75,
+        TEXT_NODE: 0.735,
         HYPERLINK_NODE: 0.9,
         IMAGE_NODE: 0.9,
         TREE: 0.5,
@@ -344,6 +344,7 @@
             while (!entry.done) {
                 var nn = entry.value[1];
 
+                // consider speed up when similarity == 1
                 if (nn.similarity > maxSimilarity) {
                     toMerge1 = entry.value[0];
                     toMerge2 = nn.cluster;
@@ -427,8 +428,13 @@
             }
         }
 
+        var elementClusters = [],
+            textClusters = [],
+            hyperlinkClusters = [],
+            imageClusters = [];
+
         if (wElementNodes.length > 0) {
-            var elementClusters = cluster(
+            elementClusters = cluster(
                 wElementNodes,
                 THRESHOLDS.ELEMENT_NODE,
                 clusterSimilarity,
@@ -437,7 +443,7 @@
         }
 
         if (wTextNodes.length > 0) {
-            var textClusters = cluster(
+            textClusters = cluster(
                 wTextNodes,
                 THRESHOLDS.TEXT_NODE,
                 clusterSimilarity,
@@ -446,7 +452,7 @@
         }
 
         if (wHyperlinkNodes.length > 0) {
-            var hyperlinkClusters = cluster(
+            hyperlinkClusters = cluster(
                 wHyperlinkNodes,
                 THRESHOLDS.HYPERLINK_NODE,
                 clusterSimilarity,
@@ -455,7 +461,7 @@
         }
 
         if (wImageNodes.length > 0) {
-            var imageClusters = cluster(
+            imageClusters = cluster(
                 wImageNodes,
                 THRESHOLDS.IMAGE_NODE,
                 clusterSimilarity,
@@ -594,7 +600,7 @@
         );
         
         if (parent.getChildrenCount() === wNodeSet.length) {
-            treeClusterMap.put(parent, clusters);
+            treeClusterMap.set(parent, clusters);
         }
 
         return clusters;
