@@ -638,16 +638,12 @@
         clusterSimilarity: clusterSimilarity,
         // @TODO add test
         cluster: cluster,
-        // @TODO add test
         clusterWNodes: clusterWNodes,
 
-        // @TODO add test
         wTreeSimilarity: wTreeSimilarity,
-        // @TODO add test
         memoizedWTreeSimilarity: memoizedWTreeSimilarity,
         // @TODO add test
         filterTreeClusters: filterTreeClusters,
-        // @TODO add test
         clusterWTrees: clusterWTrees
     };
 }).call(this);
