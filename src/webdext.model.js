@@ -703,8 +703,8 @@
                         }
                     }
                 } else if (child.dataType === DATA_TYPE.TEXT) {
-                    index++;
-                    if (index === step.position) {
+                    var currentNode = Webdext.evaluateXPath(child.indexedXPath.valueOf())[0];
+                    if (node.isSameNode(currentNode)) {
                         wNode = child;
                         isFound = true;
                         break;
