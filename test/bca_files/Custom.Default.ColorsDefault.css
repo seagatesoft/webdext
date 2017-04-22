@@ -1,0 +1,602 @@
+
+
+/* WFFM Module Default Stylesheet */
+.scfForm input[type=checkbox]{
+    width: 20px;
+    height: 20px;
+}
+.scfForm input[type=radio]{
+width:15px;
+height:15px;
+}
+
+.scfForm input, 
+.scfForm select, 
+.scfForm textarea
+{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    /* height: 15px; */
+    /* width: 15px; */
+}
+
+.scChromeDataHolder
+{
+    display:block;
+}
+
+.scfForm textarea {
+    resize: none;
+}
+
+/* Form */
+.scfForm
+{
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+    line-height: 1.4em;
+	
+}
+
+.form-title
+{
+    margin-top: 0px;
+    margin-bottom: 0px;
+    color: red ;
+      font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+    font-size: 1.8em;
+    line-height: 1.1em;
+    margin: 5px 0pt;
+    text-decoration: none;
+    font-weight: bold;
+	/*font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.42857143;color:#333;background-color:#fff;*/
+}
+
+/* Form Introduction*/
+.form-introduction
+{
+
+}
+
+/* Form Footer*/
+.form-footer
+{
+}
+
+/* Submit Button*/
+.form-submit-border
+{
+text-align:center;
+}
+
+.form-submit
+{
+}
+
+/* Error */
+.error-message
+{
+}
+
+/* Validation */
+.form-validation-summary
+{
+   display:none !important;
+}
+
+.scfValidatorRequired, .field-required
+{
+    margin: 0px 0px;
+    float: right;
+}
+
+.field-error
+{
+    margin: 0px;
+    display: block;
+    float: left;
+}
+
+/* Forms section*/
+.display-section-fieldset
+{
+    padding: 0px 15px 15px 15px;
+    border: 0px;
+    border-top: solid 2px;
+    margin: 0px 30px;
+}
+
+.display-section-legend
+{
+    padding: 7px 13px 8px 13px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+.display-section-border
+{
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.display-section-content
+{
+    width: 100%;
+    float: left;
+	font-size:14px;
+}
+
+.display-section-info
+{
+    width: 100%; /*padding: 5px 0px 0px 20px;*/
+    vertical-align: top;
+    display: inline;
+}
+
+/* Form fields */
+/* Checkbox */
+
+.checkbox-border
+{
+    clear: left;
+    text-align: left;
+    display: block;
+    margin: 5px 0px;
+    width: 100%;
+}
+
+.checkbox-content
+{
+    width: 100%;
+    display: block;
+    padding: 0px 0px;
+    margin: 0px;
+}
+
+.checkbox-info
+{
+    font-size: 0.9em;
+    display: block;
+    width: 100%;
+    padding: 0px 3px;
+}
+
+
+.field-border
+{
+    clear: left;
+    text-align: left;
+    display: block;
+    margin: 5px 0px;
+    width: 100%;
+    vertical-align: top;
+}
+
+.field-content
+{
+   display: block;
+    overflow: hidden;
+    
+}
+.field-content input, textarea, select{
+    width: 100%;
+}
+
+.list-content {
+    margin: 0;
+    width: 100%; 
+}
+
+.field-title
+{
+    padding: 3px 0px;
+    width: 30%;
+    display: block;
+    float: left;
+    clear: both;
+}
+
+.field-panel
+{
+    /*margin: 0px 3px;*/
+    padding: 0px 2px 0px 0px;
+    width: 70%;
+    display: block;
+    float: left;
+}
+
+.field-info
+{
+    padding-left: 3px;
+    font-size: 0.9em;
+    width: 100%;
+    display: block;
+    float: left;
+}
+
+.field-datebox-content
+{
+    width: 32%;
+    margin: 0px;
+}
+
+.scfDateSelectorLabel
+{
+    margin-top: 7px;
+}
+
+.field-datebox-title
+{
+    padding: 0px 0px 1px 0px;
+    margin: 0px;
+    display: block;
+    float: left;
+    font-size: xx-small;
+    line-height: 10px;
+    width: 33%;
+}
+
+ul
+{
+    margin: 0px;
+    padding: 0px;
+}
+
+
+/* Captcha Field */
+
+.field-captcha-image-container {
+    background-color: #fff; 
+    float: left; 
+    border: 1px solid #c0c0c0;
+}
+
+.field-captcha-audio {
+    display: none;
+    height: 0px;
+    width: 0px;
+    position: relative;
+}
+
+.field-captcha-audio embed {
+    position: absolute;
+    z-index: -1;
+}
+
+.field-captcha-controls {
+    float: left; 
+    margin-left: 5px;
+}
+
+.field-captcha-controls input {
+    width: auto;
+    margin: 7px; 
+    display: block;
+}
+
+/* End Captcha Field */
+
+.scfCreditCardType
+{
+    width: 100%;
+}
+
+.scfShortDate
+{
+    clear: left;
+    text-align: left;
+    display: block;
+    margin: 5px 0px;
+    vertical-align: top;
+    width: 60%;
+}
+
+.scfShortText
+{
+    margin: 0px;
+    float: right;
+    width: 40%;
+}
+
+.scfShortDate .scfDateSelectorLabel
+{
+    width: 50%;
+    margin-top: 0px;
+}
+
+.scfShortDate .scfDateSelectorGeneralPanel
+{
+    width: 46%;
+}
+
+.scfShortDate .scfDateSelectorDay, .scfShortDate .scfDateSelectorShortLabelDay, .scfShortDate .scfDateSelectorShortLabelMonth, .scfShortDate .scfDateSelectorShortLabelYear
+{
+    display: none;
+}
+
+.scfShortDate .scfDateSelectorShortLabelMonth, .scfShortDate .scfDateSelectorShortLabelYear, .scfShortDate .scfDateSelectorMonth, .scfShortDate .scfDateSelectorYear
+{
+    width: 49%;
+}
+
+.scfShortText .scfSingleLineTextLabel
+{
+    width: 15%;
+}
+
+.scfShortText .scfSingleLineTextGeneralPanel
+{
+    width: 60%;
+}
+
+.scfShortText .scfSingleLineTextUsefulInfo
+{
+}
+
+.scfShortText .scfSingleLineTextTextBox
+{
+    width: 100%;
+    margin: 0px;
+}
+
+.scWfmPassword
+{
+    behavior: url(/sitecore%20modules/shell/Web%20Forms%20for%20Marketers/themes/autocomplete.htc?v=17072012)
+}
+
+.scfDatePickerGeneralPanel .ui-icon
+{
+    float : right;
+    position: relative;
+    top: -20px;
+    display:block;
+}
+
+/*Cust*/
+
+
+/*/
+.halfAvailableWidth
+{
+	float:left;	
+	text-align: left;
+	display: inline;
+	margin: 5px 0px;
+	width: 50%;
+	vertical-align: top;
+}
+
+.thirdAvailableWidth
+{
+	float:left;	
+	text-align: left;
+	display: inline;
+	margin: 5px 0px;
+	width: 33%;
+	vertical-align: top;
+}
+
+.halfLeft
+{
+	width:50%;
+}
+
+.halfRight
+{
+	width:50%;
+	float:right;
+}
+
+.halfLeft .scfSectionBorderAsFieldSet,
+.halfRight .scfSectionBorderAsFieldSet
+{
+	margin : 0px;
+	padding:0px;	
+	border-width:0px ;
+}
+
+.halfLeft .scfEmailGeneralPanel,
+.halfLeft .scfMultipleLineTextGeneralPanel,
+.halfLeft .scfSingleLineTextGeneralPanel,
+.halfLeft .scfPasswordGeneralPanel,
+.halfLeft .scfNumberGeneralPanel,
+.halfLeft .scfDatePickerGeneralPanel,
+.halfLeft .scfDateGeneralPanel,
+.halfLeft .scfRadioListGeneralPanel,
+.halfLeft .scfCheckBoxListGeneralPanel,
+.halfLeft .scfCheckBoxGeneralPanel,
+.halfLeft .scfFileUploadGeneralPanel,
+.halfLeft .scfDateSelectorGeneralPanel,
+
+.halfRight .scfEmailGeneralPanel,
+.halfRight .scfMultipleLineTextGeneralPanel,
+.halfRight .scfSingleLineTextGeneralPanel,
+.halfRight .scfPasswordGeneralPanel,
+.halfRight .scfNumberGeneralPanel,
+.halfRight .scfDatePickerGeneralPanel,
+.halfRight .scfDateGeneralPanel,
+.halfRight .scfRadioListGeneralPanel,
+.halfRight .scfCheckBoxListGeneralPanel,
+.halfRight .scfCheckBoxListPanel,
+.halfRight .scfFileUploadGeneralPanel,
+.halfRight .scfDateSelectorGeneralPanel
+{
+	margin: 0px;
+	width: 80%;
+	display: block;
+	float:left;
+	margin-bottom:10px;
+}
+
+
+.halfLeft .scfDropListBorder,
+.halfLeft .scfEmailBorder,
+.halfLeft .scfMultipleLineTextBorder,
+.halfLeft .scfSingleLineTextBorder,
+.halfLeft .scfPasswordBorder,
+.halfLeft .scfNumberBorder,
+.halfLeft .scfDatePickerBorder,
+.halfLeft .scfDateBorder,
+.halfLeft .scfRadioListBorder,
+.halfLeft .scfListBoxBorder,
+.halfLeft .scfCheckBoxListBorder,
+.halfLeft .scfFileUploadBorder,
+.halfRight .scfDropListBorder,
+.halfRight .scfEmailBorder,
+.halfRight .scfMultipleLineTextBorder,
+.halfRight .scfSingleLineTextBorder,
+.halfRight .scfPasswordBorder,
+.halfRight .scfNumberBorder,
+.halfRight .scfDatePickerBorder,
+.halfRight .scfDateBorder,
+.halfRight .scfRadioListBorder,
+.halfRight .scfListBoxBorder,
+.halfRight .scfCheckBoxListBorder,
+.halfRight .scfFileUploadBorder
+{
+	text-align: left;
+	display: block;
+	margin: 0px;
+	width: 100%;
+	vertical-align: top;
+}
+
+.halfLeft .scfDropListLabel,
+.halfLeft .scfEmailLabel,
+.halfLeft .scfMultipleLineTextLabel,
+.halfLeft .scfSingleLineTextLabel,
+.halfLeft .scfPasswordLabel,
+.halfLeft .scfNumberLabel,
+.halfLeft .scfDatePickerLabel,
+.halfLeft .scfDateLabel,
+.halfLeft .scfRadioListLabel,
+.halfLeft .scfCheckBoxListLabel,
+.halfLeft .scfListBoxLabel,
+.halfLeft .scfFileUploadLabel,
+.halfLeft .scfDateSelectorLabel,
+.halfRight .scfDropListLabel,
+.halfRight .scfEmailLabel,
+.halfRight .scfMultipleLineTextLabel,
+.halfRight .scfSingleLineTextLabel,
+.halfRight .scfPasswordLabel,
+.halfRight .scfNumberLabel,
+.halfRight .scfDatePickerLabel,
+.halfRight .scfDateLabel,
+.halfRight .scfRadioListLabel,
+.halfRight .scfCheckBoxListLabel,
+.halfRight .scfListBoxLabel,
+.halfRight .scfFileUploadLabel,
+.halfRight .scfDateSelectorLabel
+{
+	padding-bottom : 0px;
+}
+
+
+
+.halfLeft .scfValidator,
+.halfRight .scfValidator
+{
+	margin: 0px;
+	display:block;
+	font-size :0.8em;
+	position:absolute;
+}
+
+.halfLeft .scfValidatorRequired,
+.halfLeft .scfRequired,
+.halfRight .scfValidatorRequired,
+.halfRight .scfRequired
+{
+	float:left;
+}
+/*edit by Asiani on 2016/05/10*/
+
+
+.field-content input, textarea, select{
+  -webkit-transition: all 0.30s ease-in-out;
+  -moz-transition: all 0.30s ease-in-out;
+  -ms-transition: all 0.30s ease-in-out;
+  -o-transition: all 0.30s ease-in-out;
+  outline: none;
+  padding: 3px 0px 3px 3px;
+  margin: 5px 1px 3px 0px;
+  border: 1px solid #DDDDDD;
+  background-color: rgba(192,192,192,0.6);
+}
+ 
+ .field-content input:focus,.field-content textarea:focus, .field-content select:focus{
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+  padding: 3px 0px 3px 3px;
+  margin: 5px 1px 3px 0px;
+  border: 2px solid rgba(81, 203, 238, 1);
+}
+
+
+.field-panel.checkboxpanjang {
+    width: 90%;
+}
+
+.scfForm table{background-color:transparent;}
+.scfForm td{padding:5px 5px 5px 5px;}
+.field-error, .field-required, .field-validation-error, .form-validation-summary
+{
+ font-size: 12px;
+  font-weight: bold;
+   /* font-family: 'Calibri', sans-serif;
+ 
+  */
+  color: #0069b5;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  
+  /*@media (min-width: @screen-lg-min) {
+             font-size: 12px;
+  font-weight: bold;
+            }*/
+}
+
+.form-title{
+color:#0d5cab;
+text-align: center;
+}
+.form-submit{
+width:70%;
+height: 35px;
+margin-top:15px;
+background: url("http://www.bca.co.id/~/media/Web%20Forms%20for%20Marketers/btn-blue.ashx") no-repeat;
+border:transparent;
+
+  position: relative;
+  color: #ffffff;
+  padding-left: 20px;
+  background-size: 100% auto;
+  /*@media (min-width: @screen-lg-min) {
+                padding-left: 50px;
+                padding-left: 10px; //handri 190216
+              }*/
+}
+.field-title{padding: 5px;font-weight: 500;}
+
+.checkbox-content{
+padding-bottom: 10px;
+}
+
+.field-panel-full{
+   /* margin: 0px 3px; */
+    padding: 0px 2px 0px 0px;
+    width: 100%;
+    display: block;
+    float: left;
+	
+	}
+.center-wffm-text{
+text-align:center;
+font-weight:400px;
+text-decoration:italic;
+}
+/*edit by Asiani end*/
