@@ -738,7 +738,7 @@
                         }
                     }
                 } else if (child.dataType === DATA_TYPE.TEXT) {
-                    var currentNode = Webdext.evaluateXPath(child.indexedXPath.valueOf())[0];
+                    var currentNode = evaluateXPath(child.indexedXPath.valueOf())[0];
                     if (node.isSameNode(currentNode)) {
                         wNode = child;
                         isFound = true;
