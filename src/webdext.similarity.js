@@ -280,17 +280,12 @@
             simPairMap = new Map();
 
         for (var i=0; i < dataLength; i++) {
-            clusters.push([data[i]]);            
+            clusters.push([data[i]]);
         }
 
         // @EXPERIMENTAL
         if (dataLength === 1 || dataLength > 100) {
             return clusters;
-        }
-
-        var clusterType = "wTree";
-        if (dataSimilarityFunc === memoizedWNodeSimilarity) {
-            clusterType = "wNode";
         }
 
         // get distance for all possible pairs
@@ -340,18 +335,22 @@
         while (clusters.length > 1) {
             var maxSimilarity = Number.MIN_VALUE,
                 toMerge1 = null,
-                toMerge2 = null,
-                nearestNeighborsSize = nearestNeighbors.size;
+                toMerge2 = null;
 
             // find pair with maximum similarity
-            for (i=nearestNeighborsSize; i--; ) {
-                var nn = nearestNeighbors.values[i];
+            var entryIterator = nearestNeighbors.entries(),
+                entry = entryIterator.next();
+
+            while (!entry.done) {
+                var nn = entry.value[1];
 
                 if (nn.similarity > maxSimilarity) {
-                    toMerge1 = nearestNeighbors.keys[i];
-                    toMerge2 = nn.neighbor;
+                    toMerge1 = entry.value[0];
+                    toMerge2 = nn.cluster;
                     maxSimilarity = nn.similarity;
                 }
+
+                entry = entryIterator.next();
             }
 
             // stop clustering
@@ -371,7 +370,7 @@
             for (i=newClusterLength; i--; ) {
                 var c = clusters[i];
                 if (c !== toMerge1) {
-                    var nn = nearestNeighbors.get(c).neighbor;
+                    var nn = nearestNeighbors.get(c).cluster;
                     if (nn === toMerge1 || nn === toMerge2) {
                         affectedClusters.push(c);
                     }
@@ -624,10 +623,6 @@
         memoizedWTextNodeSimilarity: memoizedWTextNodeSimilarity,
         memoizedWHyperlinkNodeSimilarity: memoizedWHyperlinkNodeSimilarity,
         memoizedWImageNodeSimilarity: memoizedWImageNodeSimilarity,
-        // @TODO add test
-        wTreeSimilarity: wTreeSimilarity,
-        // @TODO add test
-        memoizedWTreeSimilarity: memoizedWTreeSimilarity,
 
         // @TODO add test
         clusterSimilarity: clusterSimilarity,
@@ -635,7 +630,14 @@
         cluster: cluster,
         // @TODO add test
         clusterWNodes: clusterWNodes,
+
+        // @TODO add test
+        wTreeSimilarity: wTreeSimilarity,
+        // @TODO add test
+        memoizedWTreeSimilarity: memoizedWTreeSimilarity,
         // @TODO add test
         filterTreeClusters: filterTreeClusters,
+        // @TODO add test
+        clusterWTrees: clusterWTrees
     };
 }).call(this);
