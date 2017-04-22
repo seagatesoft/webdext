@@ -19,6 +19,32 @@ QUnit.test("SimpleMap", function(assert) {
     assert.strictEqual(map.get("telo"), undefined);
     assert.strictEqual(map.size, 0);
     assert.notOk(map.has("telo"));
+
+    map.set("telo", "bakar");
+    map.set("gedhang", "goreng");
+    map.set("tempe", "bacem");
+    var keyIterator = map.keys(),
+        key = keyIterator.next(),
+        valueIterator = map.values(),
+        value = valueIterator.next(),
+        entryIterator = map.entries(),
+        entry = entryIterator.next();
+
+    while (!key.done) {
+        assert.ok(["telo", "gedhang", "tempe"].indexOf(key.value) > -1);
+        key = keyIterator.next();
+    }
+
+    while (!value.done) {
+        assert.ok(["bakar", "goreng", "bacem"].indexOf(value.value) > -1);
+        value = valueIterator.next();
+    }
+
+    while (!entry.done) {
+        assert.ok(["telo", "gedhang", "tempe"].indexOf(entry.value[0]) > -1);
+        assert.ok(["bakar", "goreng", "bacem"].indexOf(entry.value[1]) > -1);
+        entry = entryIterator.next();
+    }
 });
 
 QUnit.module("normVector");

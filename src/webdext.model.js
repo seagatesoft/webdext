@@ -15,40 +15,77 @@
      * When native Map implementation is not available on the environment 
      */
     if (typeof Map === "undefined") {
+        var Iterator = function(data) {
+            this.data = data;
+            this.currentIndex = 0;
+        };
+        Iterator.prototype.next = function() {
+            if (this.currentIndex >= this.data.length) {
+                return {value: undefined, done: true};
+            }
+
+            return {value: this.data[this.currentIndex++], done: false};
+        };
+        var MapIterator = function(map) {
+            this.map = map;
+            this.currentIndex = 0;
+        };
+        MapIterator.prototype.next = function() {
+            if (this.currentIndex >= this.map._keys.length) {
+                return {value: undefined, done: true};
+            }
+
+            var value = [];
+            value.push(this.map._keys[this.currentIndex]);
+            value.push(this.map._values[this.currentIndex]);
+            this.currentIndex++;
+
+            return {value: value, done: false};
+        };
+
         this.Map = function() {
-            this.keys = [];
-            this.values = [];
+            this._keys = [];
+            this._values = [];
         };
         this.Map.prototype.set = function(key, value) {
-            var index = this.keys.indexOf(key);
+            var index = this._keys.indexOf(key);
             if (index === -1) {
-                this.keys.push(key);
-                this.values.push(value);
+                this._keys.push(key);
+                this._values.push(value);
             } else {
-                this.values[index] = value;
+                this._values[index] = value;
             }
         };
         this.Map.prototype.get = function(key) {
-            var index = this.keys.indexOf(key);
+            var index = this._keys.indexOf(key);
             if (index !== -1) {
-                return this.values[index];
+                return this._values[index];
             }
         };
         this.Map.prototype.delete = function(key) {
-            var index = this.keys.indexOf(key);
+            var index = this._keys.indexOf(key);
             if (index > -1) {
-                this.keys.splice(index, 1);
-                return this.values.splice(index, 1)[0];
+                this._keys.splice(index, 1);
+                return this._values.splice(index, 1)[0];
             } else {
                 return null;
             }
         };
         this.Map.prototype.has = function(key) {
-            return !(this.keys.indexOf(key) === -1);
+            return !(this._keys.indexOf(key) === -1);
         };
         this.Map.prototype.clear = function() {
-            this.keys.splice(0, this.keys.length);
-            this.values.splice(0, this.values.length);
+            this._keys.splice(0, this._keys.length);
+            this._values.splice(0, this._values.length);
+        };
+        this.Map.prototype.keys = function() {
+            return new Iterator(this._keys);
+        };
+        this.Map.prototype.values = function() {
+            return new Iterator(this._values);
+        };
+        this.Map.prototype.entries = function() {
+            return new MapIterator(this);
         };
 
         Object.defineProperty(
@@ -56,7 +93,7 @@
             "size",
             {
                 get: function() {
-                    return this.keys.length;
+                    return this._keys.length;
                 }
             }
         );
