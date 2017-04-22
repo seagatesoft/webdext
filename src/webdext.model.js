@@ -331,10 +331,8 @@
     function TagPathStep(tagName, direction) {
         this.tagName = tagName;
         this.direction = direction;
+        this.value = this.tagName + "," + this.direction;
     }
-    TagPathStep.prototype.valueOf = function() {
-        return this.tagName + "," + this.direction;
-    };
     TagPathStep.prototype.toString = function() {
         return "<" + this.tagName + ">" + this.direction;
     };

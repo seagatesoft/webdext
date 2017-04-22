@@ -48,7 +48,7 @@ QUnit.test("urlSimilarity", function(assert) {
     var parsedUrl2 = Webdext.Model.parseUrl("https://www.amazon.com/dp/0980576806");
     assert.strictEqual(
         Webdext.Similarity.urlSimilarity(parsedUrl1, parsedUrl2),
-        0.8928571428571428
+        0.75
     );
 });
 
@@ -249,7 +249,7 @@ QUnit.test("WTextNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.wTextNodeSimilarity(wNode1, wNode2),
-        0.818269354221901
+        0.7941895926480885
     );
 });
 QUnit.test("WHyperlinkNodeSimilarity", function(assert) {
@@ -268,7 +268,7 @@ QUnit.test("WHyperlinkNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.wHyperlinkNodeSimilarity(wNode1, wNode2),
-        0.931740614334471
+        0.9346938775510204
     );
 });
 QUnit.test("WImageNodeSimilarity", function(assert) {
@@ -285,7 +285,7 @@ QUnit.test("WImageNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.wImageNodeSimilarity(wNode1, wNode2),
-        0.9640283872365784
+        0.9346938775510204
     );
 });
 QUnit.test("wNodeSimilarity", function(assert) {
@@ -364,11 +364,11 @@ QUnit.test("wNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.wNodeSimilarity(wTextNode1, wTextNode2),
-        0.818269354221901
+        0.7941895926480885
     );
     assert.strictEqual(
         Webdext.Similarity.wNodeSimilarity(wTextNode2, wTextNode1),
-        0.818269354221901
+        0.7941895926480885
     );
 
     var hyperlinkNode1 = document.getElementById("hyperlinkElement1");
@@ -460,11 +460,11 @@ QUnit.test("wNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.wNodeSimilarity(wHyperlinkNode1, wHyperlinkNode2),
-        0.931740614334471
+        0.9346938775510204
     );
     assert.strictEqual(
         Webdext.Similarity.wNodeSimilarity(wHyperlinkNode2, wHyperlinkNode1),
-        0.931740614334471
+        0.9346938775510204
     );
 
     var imageNode1 = document.getElementById("imageElement1");
@@ -493,14 +493,14 @@ QUnit.test("wNodeSimilarity", function(assert) {
             wImageNode1.src,
             wImageNode2.src
         ),
-        0.8888888888888888
+        0.75
     );
     assert.strictEqual(
         Webdext.Similarity.urlSimilarity(
             wImageNode2.src,
             wImageNode1.src
         ),
-        0.8888888888888888
+        0.75
     );
     assert.strictEqual(
         Webdext.Similarity.tagPathSimilarity(wImageNode1.tagPath, wImageNode1.tagPath),
@@ -554,11 +554,11 @@ QUnit.test("wNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.wNodeSimilarity(wImageNode1, wImageNode2),
-        0.9640283872365784
+        0.9346938775510204
     );
     assert.strictEqual(
         Webdext.Similarity.wNodeSimilarity(wImageNode2, wImageNode1),
-        0.9640283872365784
+        0.9346938775510204
     );
 });
 QUnit.test("memoizedWNodeSimilarity", function(assert) {
@@ -575,11 +575,11 @@ QUnit.test("memoizedWNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.memoizedWTextNodeSimilarity(wTextNode1, wTextNode2),
-        0.818269354221901
+        0.7941895926480885
     );
     assert.strictEqual(
         Webdext.Similarity.memoizedWTextNodeSimilarity(wTextNode2, wTextNode1),
-        0.818269354221901
+        0.7941895926480885
     );
 
     var hyperlinkNode1 = document.getElementById("hyperlinkElement1");
@@ -597,11 +597,11 @@ QUnit.test("memoizedWNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.memoizedWHyperlinkNodeSimilarity(wHyperlinkNode1, wHyperlinkNode2),
-        0.931740614334471
+        0.9346938775510204
     );
     assert.strictEqual(
         Webdext.Similarity.memoizedWHyperlinkNodeSimilarity(wHyperlinkNode2, wHyperlinkNode1),
-        0.931740614334471
+        0.9346938775510204
     );
 
     var imageNode1 = document.getElementById("imageElement1");
@@ -617,11 +617,11 @@ QUnit.test("memoizedWNodeSimilarity", function(assert) {
     );
     assert.strictEqual(
         Webdext.Similarity.memoizedWImageNodeSimilarity(wImageNode1, wImageNode2),
-        0.9640283872365784
+        0.9346938775510204
     );
     assert.strictEqual(
         Webdext.Similarity.memoizedWImageNodeSimilarity(wImageNode2, wImageNode1),
-        0.9640283872365784
+        0.9346938775510204
     );
 });
 
@@ -632,11 +632,11 @@ QUnit.test("SimilarityMap", function(assert) {
     var parsedUrl2 = Webdext.Model.parseUrl("https://www.amazon.com/dp/0980576806");
     assert.strictEqual(
         simMap.get(parsedUrl1, parsedUrl2),
-        0.8928571428571428
+        0.75
     );
     assert.strictEqual(
         simMap.get(parsedUrl2, parsedUrl1),
-        0.8928571428571428
+        0.75
     );
 });
 
@@ -651,7 +651,7 @@ QUnit.test("getValueFromSimPairMap", function(assert) {
     simPairMap.set(parsedUrl1, innerMap);
     assert.strictEqual(
         Webdext.Similarity.getValueFromSimPairMap(simPairMap, parsedUrl1, parsedUrl2),
-        0.8928571428571428
+        0.75
     );
 });
 

@@ -175,7 +175,7 @@ QUnit.test("getIndexedXPathImage", function(assert) {
 QUnit.module("TagPathStep");
 QUnit.test("TagPathStep", function(assert) {
     var tpStep = new Webdext.Model.TagPathStep("SPAN", "C");
-    assert.strictEqual(tpStep.valueOf(), "SPAN,C");
+    assert.strictEqual(tpStep.value, "SPAN,C");
     assert.strictEqual(tpStep.toString(), "<SPAN>C");
 });
 

@@ -13,9 +13,9 @@
         RECTANGLE_SIZE: 0.81
     };
     var TOTAL_WEIGHTS = {
-        TEXT: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.TAG_PATH + WEIGHTS.PRESENTATION_STYLE,
-        HYPERLINK: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.TAG_PATH + WEIGHTS.PRESENTATION_STYLE,
-        IMAGE: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.TAG_PATH + WEIGHTS.RECTANGLE_SIZE
+        TEXT: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.PRESENTATION_STYLE,
+        HYPERLINK: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.PRESENTATION_STYLE,
+        IMAGE: WEIGHTS.DATA_TYPE + WEIGHTS.DATA_CONTENT + WEIGHTS.RECTANGLE_SIZE
     };
     var THRESHOLDS = {
         ELEMENT_NODE: 0.99,
@@ -73,17 +73,18 @@
         }
 
         var hostNameSimilarity = url1.hostname === url2.hostname ? 1 : 0;
-        var pathNameEditDistance = sequenceEditDistance(url1.pathname, url2.pathname);
-        var normalizedEditDistance = pathNameEditDistance / (
-            url1.pathname.length + url2.pathname.length
-        );
-        var pathNameSimilarity = 1 - normalizedEditDistance;
+        var pathNameSimilarity = url1.pathname === url2.pathname ? 1 : 0.5;
+        // var pathNameEditDistance = sequenceEditDistance(url1.pathname, url2.pathname);
+        // var normalizedEditDistance = pathNameEditDistance / (
+        //     url1.pathname.length + url2.pathname.length
+        // );
+        // var pathNameSimilarity = 1 - normalizedEditDistance;
 
         return (hostNameSimilarity + pathNameSimilarity) / 2;
     }
 
     function tagPathSubstitutionCost(e1, e2) {
-        if (e1.valueOf() === e2.valueOf()) {
+        if (e1.value === e2.value) {
             return 0;
         } else {
             return 2;
@@ -148,13 +149,14 @@
         var cosineSim = cosineSimilarity(wtn1, wtn2);
         var weightedCosineSim = cosineSim * WEIGHTS.DATA_CONTENT;
 
-        var tagPathSim = tagPathSimilarity(wtn1.tagPath, wtn2.tagPath);
-        var weightedTagPathSim = tagPathSim * WEIGHTS.TAG_PATH;
+        // var tagPathSim = tagPathSimilarity(wtn1.tagPath, wtn2.tagPath);
+        // var weightedTagPathSim = tagPathSim * WEIGHTS.TAG_PATH;
 
         var psSim = presentationStyleSimilarity(wtn1.presentationStyle, wtn2.presentationStyle);
         var weightedPSSim = psSim * WEIGHTS.PRESENTATION_STYLE;
 
-        var totalSim = weightedCosineSim + weightedTagPathSim + weightedPSSim + WEIGHTS.DATA_TYPE;
+        // var totalSim = weightedCosineSim + weightedTagPathSim + weightedPSSim + WEIGHTS.DATA_TYPE;
+        var totalSim = weightedCosineSim + weightedPSSim + WEIGHTS.DATA_TYPE;
 
         return totalSim / TOTAL_WEIGHTS.TEXT;
     }
@@ -163,13 +165,14 @@
         var urlSim = urlSimilarity(whn1.href, whn2.href);
         var weightedUrlSim = urlSim * WEIGHTS.DATA_CONTENT;
 
-        var tagPathSim = tagPathSimilarity(whn1.tagPath, whn2.tagPath);
-        var weightedTagPathSim = tagPathSim * WEIGHTS.TAG_PATH;
+        // var tagPathSim = tagPathSimilarity(whn1.tagPath, whn2.tagPath);
+        // var weightedTagPathSim = tagPathSim * WEIGHTS.TAG_PATH;
 
         var psSim = presentationStyleSimilarity(whn1.presentationStyle, whn2.presentationStyle);
         var weightedPSSim = psSim * WEIGHTS.PRESENTATION_STYLE;
 
-        var totalSim = weightedUrlSim + weightedTagPathSim + weightedPSSim + WEIGHTS.DATA_TYPE;
+        // var totalSim = weightedUrlSim + weightedTagPathSim + weightedPSSim + WEIGHTS.DATA_TYPE;
+        var totalSim = weightedUrlSim + weightedPSSim + WEIGHTS.DATA_TYPE;
 
         return totalSim / TOTAL_WEIGHTS.HYPERLINK;
     }
@@ -178,13 +181,14 @@
         var urlSim = urlSimilarity(win1.src, win2.src);
         var weightedUrlSim = urlSim * WEIGHTS.DATA_CONTENT;
 
-        var tagPathSim = tagPathSimilarity(win1.tagPath, win2.tagPath);
-        var weightedTagPathSim = tagPathSim * WEIGHTS.TAG_PATH;
+        // var tagPathSim = tagPathSimilarity(win1.tagPath, win2.tagPath);
+        // var weightedTagPathSim = tagPathSim * WEIGHTS.TAG_PATH;
 
         var rsSim = rectangleSizeSimilarity(win1.rectangleSize, win2.rectangleSize);
         var weightedRSSim = rsSim * WEIGHTS.RECTANGLE_SIZE;
 
-        var totalSim = weightedUrlSim + weightedTagPathSim + weightedRSSim + WEIGHTS.DATA_TYPE;
+        // var totalSim = weightedUrlSim + weightedTagPathSim + weightedRSSim + WEIGHTS.DATA_TYPE;
+        var totalSim = weightedUrlSim + weightedRSSim + WEIGHTS.DATA_TYPE;
 
         return totalSim / TOTAL_WEIGHTS.IMAGE;
     }
