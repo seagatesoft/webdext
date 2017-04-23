@@ -276,7 +276,7 @@
         return sum / (cluster1Length * cluster2Length);
     }
 
-    function cluster(
+    function findClusters(
         data, similarityThreshold, clusterSimilarityFunc, dataSimilarityFunc
     ) {
         var clusters = [],
@@ -438,7 +438,7 @@
             imageClusters = [];
 
         if (wElementNodes.length > 0) {
-            elementClusters = cluster(
+            elementClusters = findClusters(
                 wElementNodes,
                 THRESHOLDS.ELEMENT_NODE,
                 clusterSimilarity,
@@ -447,7 +447,7 @@
         }
 
         if (wTextNodes.length > 0) {
-            textClusters = cluster(
+            textClusters = findClusters(
                 wTextNodes,
                 THRESHOLDS.TEXT_NODE,
                 clusterSimilarity,
@@ -456,7 +456,7 @@
         }
 
         if (wHyperlinkNodes.length > 0) {
-            hyperlinkClusters = cluster(
+            hyperlinkClusters = findClusters(
                 wHyperlinkNodes,
                 THRESHOLDS.HYPERLINK_NODE,
                 clusterSimilarity,
@@ -465,7 +465,7 @@
         }
 
         if (wImageNodes.length > 0) {
-            imageClusters = cluster(
+            imageClusters = findClusters(
                 wImageNodes,
                 THRESHOLDS.IMAGE_NODE,
                 clusterSimilarity,
@@ -600,7 +600,7 @@
             }
         }
 
-        clusters = cluster(
+        clusters = findClusters(
             wNodeSet,
             THRESHOLDS.TREE,
             clusterSimilarity,
@@ -641,7 +641,7 @@
         // @TODO add test
         clusterSimilarity: clusterSimilarity,
         // @TODO add test
-        cluster: cluster,
+        findClusters: findClusters,
         clusterWNodes: clusterWNodes,
 
         wTreeSimilarity: wTreeSimilarity,
