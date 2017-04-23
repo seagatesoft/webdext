@@ -276,4 +276,23 @@ WUnit.test("clusterWTrees", function(assert) {
     assert.ok(atLeast1ClusterHas20Tree, "atLeast1ClusterHas20Tree");
 });
 
+WUnit.test("filterTreeClusters", function(assert) {
+    var clusterWTrees = Webdext.Similarity.clusterWTrees;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var clusters = clusterWTrees(wParentNode.children);
+    var wNodeSet = wParentNode.children.slice(1, 21);
+    var filteredCluster = Webdext.Similarity.filterTreeClusters(clusters, wNodeSet);
+    assert.strictEqual(
+        filteredCluster.length,
+        1,
+        "filteredCluster.length != 1"
+    );
+    assert.strictEqual(
+        filteredCluster[0].length,
+        20,
+        "filteredCluster[0].length != 20"
+    );
+});
 console.log("End TBDW 1 test");

@@ -163,4 +163,24 @@ WUnit.test("clusterWTrees", function(assert) {
     });
     assert.ok(allClusterNodesInTrees, "allClusterNodesInTrees");
 });
+
+WUnit.test("filterTreeClusters", function(assert) {
+    var clusterWTrees = Webdext.Similarity.clusterWTrees;
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var clusters = clusterWTrees(wUlNode.children);
+    var wNodeSet = wUlNode.children.slice(3);
+    var filteredCluster = Webdext.Similarity.filterTreeClusters(clusters, wNodeSet);
+    assert.strictEqual(
+        filteredCluster.length,
+        1,
+        "filteredCluster.length != 1"
+    );
+    assert.strictEqual(
+        filteredCluster[0].length,
+        wUlNode.children.length-3,
+        "filteredCluster[0].length != wUlNode.children.length-3"
+    );
+});
 console.log("End Amazon test");

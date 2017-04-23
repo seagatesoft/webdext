@@ -126,4 +126,26 @@ WUnit.test("clusterWTrees", function(assert) {
     });
     assert.ok(allClusterNodesInTrees, "allClusterNodesInTrees");
 });
+
+WUnit.test("filterTreeClusters", function(assert) {
+    var clusterWTrees = Webdext.Similarity.clusterWTrees;
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var clusters = clusterWTrees(wTbodyNode.children);
+    var wNodeSet = wTbodyNode.children.slice(1);
+    var filteredCluster = Webdext.Similarity.filterTreeClusters(clusters, wNodeSet);
+    assert.strictEqual(
+        filteredCluster.length,
+        1,
+        "filteredCluster.length != 1"
+    );
+    assert.strictEqual(
+        filteredCluster[0].length,
+        wTbodyNode.children.length-1,
+        "filteredCluster[0].length != wTbodyNode.children.length-1"
+    );
+});
 console.log("End BCA test");

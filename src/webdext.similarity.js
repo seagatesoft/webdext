@@ -571,13 +571,17 @@
 
         for (var i=0; i < clustersLength; i++) {
             var cluster = clusters[i],
-                clusterLength = cluster.length;
+                clusterLength = cluster.length,
+                filteredCluster = [];
 
             for (var j=0; j < clusterLength; j++) {
                 if (wNodeSet.indexOf(cluster[j]) > -1) {
-                    filteredClusters.push(cluster);
-                    break;
+                    filteredCluster.push(cluster[j]);
                 }
+            }
+
+            if (filteredCluster.length > 0) {
+                filteredClusters.push(filteredCluster);
             }
         }
 
@@ -642,7 +646,6 @@
 
         wTreeSimilarity: wTreeSimilarity,
         memoizedWTreeSimilarity: memoizedWTreeSimilarity,
-        // @TODO add test
         filterTreeClusters: filterTreeClusters,
         clusterWTrees: clusterWTrees
     };
