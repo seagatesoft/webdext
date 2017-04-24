@@ -380,9 +380,9 @@
     }
 
     function segmentCoarseGrainedRegion(cgr) {
-        var cRecSetList = [],
-            wNodeSet = cgr.getSiblingNodes(),
-            wNodeSetLength = wNodeSet.length;
+        var wNodeSet = cgr.getSiblingNodes();
+        var wNodeSetLength = wNodeSet.length,
+            cRecSetList = [];
 
         for (var i=0; i < wNodeSetLength; i++) {
             var wNode = wNodeSet[i];
