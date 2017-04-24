@@ -208,32 +208,25 @@
 
         var cRecSetList = mineCRecFromNodeSet(wNodeSet);
 
-        var uncoveredChildren = [],
-            wNodeSetLength = wNodeSet.length;
+        var cRecSetListLength = cRecSetList.length,
+            coveredChildren = [];
 
-        for (var i=0; i < wNodeSetLength; i++) {
-            var child = wNodeSet[i],
-                covered = false,
-                cRecSetListLength = cRecSetList.length;
+        for (var i=cRecSetListLength; i--; ) {
+            var cRecSet = cRecSetList[i],
+                cRecSetLength = cRecSet.size();
 
-            for (var j=0; j < cRecSetListLength; j++) {
-                var cRecSet = cRecSetList[j],
-                    cRecSetLength = cRecSet.size();
-
-                for (var k=0; k < cRecSetLength; k++) {
-                    if (cRecSet.recordSet[k].wNodeSet.indexOf(child) > -1) {
-                        covered = true;
-                        break;
-                    }
-                }
-
-                if (covered) {
-                    break;
-                }
+            for (var j=cRecSetLength; j--; ) {
+                coveredChildren.push.apply(coveredChildren, cRecSet.recordSet[j].wNodeSet);
             }
+        }
 
-            if (!covered) {
-                uncoveredChildren.push(child);
+        var wNodeSetLength = wNodeSet.length,
+            uncoveredChildren = [];
+
+        for (i=0; i < wNodeSetLength; i++) {
+            var wNode = wNodeSet[i];
+            if (coveredChildren.indexOf(wNode) === -1) {
+                uncoveredChildren.push(wNode);
             }
         }
 
