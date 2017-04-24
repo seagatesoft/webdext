@@ -295,4 +295,109 @@ WUnit.test("filterTreeClusters", function(assert) {
         "filteredCluster[0].length != 20"
     );
 });
+
+WUnit.test("identifyCoarseGrainedRegions", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var wNodeSet = wParentNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    assert.strictEqual(cgrs.length, 1, "cgrs.length != 1");
+    assert.strictEqual(
+        cgrs[0].parent.valueOf(),
+        "/html[1]/body[1]/table[4]/tbody[1]/tr[1]/td[2]/blockquote[1]",
+        "cgrs[0].parent.valueOf()"
+    );
+    assert.strictEqual(cgrs[0].minIndex, 2, "cgrs[0].minIndex != 2");
+    assert.strictEqual(cgrs[0].maxIndex, 21, "cgrs[0].maxIndex != 21");
+});
+
+WUnit.test("headBasedCRecMine", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var wNodeSet = wParentNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = Webdext.Extraction.orderBasedCRecMine(cgrs[0].getSiblingNodes());
+
+    assert.strictEqual(cRecSet.size(), 20, "cRecSet.size() != 20");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[2].textContent,
+        "Search for: -asia/-",
+        "cRecSet.recordSet[0].getLeafNodes()[2].textContent != Search for: -asia/-"
+    );
+});
+
+WUnit.test("orderBasedCRecMine", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var wNodeSet = wParentNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = Webdext.Extraction.orderBasedCRecMine(cgrs[0].getSiblingNodes());
+
+    assert.strictEqual(cRecSet.size(), 20, "cRecSet.size() != 20");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[2].textContent,
+        "Search for: -asia/-",
+        "cRecSet.recordSet[0].getLeafNodes()[2].textContent != Search for: -asia/-"
+    );
+});
+
+WUnit.test("headOrderBasedCRecMine", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var wNodeSet = wParentNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = Webdext.Extraction.orderBasedCRecMine(cgrs[0].getSiblingNodes());
+
+    assert.strictEqual(cRecSet.size(), 20, "cRecSet.size() != 20");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[2].textContent,
+        "Search for: -asia/-",
+        "cRecSet.recordSet[0].getLeafNodes()[2].textContent != Search for: -asia/-"
+    );
+});
+
+WUnit.test("integratedCRecMine", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var wNodeSet = wParentNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = Webdext.Extraction.integratedCRecMine(cgrs[0].getSiblingNodes());
+
+    assert.strictEqual(cRecSet.size(), 20, "cRecSet.size() != 20");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[2].textContent,
+        "Search for: -asia/-",
+        "cRecSet.recordSet[0].getLeafNodes()[2].textContent != Search for: -asia/-"
+    );
+});
+
+WUnit.test("segmentCoarseGrainedRegion", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions,
+        segmentCoarseGrainedRegion = Webdext.Extraction.segmentCoarseGrainedRegion;
+    var wTree = Webdext.Model.createWTree();
+    var parentNode = Webdext.evaluateXPath('/html/body/table[4]/tbody/tr/td[2]/blockquote')[0];
+    var wParentNode = Webdext.Model.findWNode(parentNode, wTree);
+    var wNodeSet = wParentNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = segmentCoarseGrainedRegion(cgrs[0]);
+    assert.strictEqual(cRecSet.size(), 20, "cRecSet.size() != 20");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[2].textContent,
+        "Search for: -asia/-",
+        "cRecSet.recordSet[0].getLeafNodes()[2].textContent != Search for: -asia/-"
+    ); 
+});
+
+// headBasedCRecMine === orderBasedCRecMine
+// but, unlike BCA and Amazon, the main data records on this page have non data record siblings
 console.log("End TBDW 1 test");

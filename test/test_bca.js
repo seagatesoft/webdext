@@ -148,4 +148,108 @@ WUnit.test("filterTreeClusters", function(assert) {
         "filteredCluster[0].length != wTbodyNode.children.length-1"
     );
 });
+
+WUnit.test("identifyCoarseGrainedRegions", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var wNodeSet = wTbodyNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    assert.strictEqual(cgrs.length, 1, "cgrs.length != 1");
+    assert.strictEqual(
+        cgrs[0].parent.valueOf(),
+        "/html[1]/body[1]/section[2]/div[1]/section[1]/div[2]/div[1]/table[1]/tbody[1]",
+        "cgrs[0].parent.valueOf()"
+    );
+    assert.strictEqual(cgrs[0].minIndex, 1, "cgrs[0].minIndex != 1");
+    assert.strictEqual(cgrs[0].maxIndex, 14, "cgrs[0].maxIndex != 14");
+});
+
+WUnit.test("headBasedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var wNodeSet = wTbodyNode.children;
+    var cRecSet = Webdext.Extraction.headBasedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 14, "cRecSet.size() != 14");
+    assert.strictEqual(
+        cRecSet.recordSet[0].toString(),
+        "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
+        "cRecSet.recordSet[0].toString()"
+    );
+});
+
+WUnit.test("orderBasedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var wNodeSet = wTbodyNode.children;
+    var cRecSet = Webdext.Extraction.orderBasedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 14, "cRecSet.size() != 14");
+    assert.strictEqual(
+        cRecSet.recordSet[0].toString(),
+        "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
+        "cRecSet.recordSet[0].toString()"
+    );
+});
+
+WUnit.test("headOrderBasedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var wNodeSet = wTbodyNode.children;
+    var cRecSet = Webdext.Extraction.headOrderBasedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 14, "cRecSet.size() != 14");
+    assert.strictEqual(
+        cRecSet.recordSet[0].toString(),
+        "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
+        "cRecSet.recordSet[0].toString()"
+    );
+});
+
+WUnit.test("integratedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var wNodeSet = wTbodyNode.children;
+    var cRecSet = Webdext.Extraction.integratedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 14, "cRecSet.size() != 14");
+    assert.strictEqual(
+        cRecSet.recordSet[0].toString(),
+        "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
+        "cRecSet.recordSet[0].toString()"
+    );
+});
+
+WUnit.test("segmentCoarseGrainedRegion", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions,
+        segmentCoarseGrainedRegion = Webdext.Extraction.segmentCoarseGrainedRegion;
+    var wTree = Webdext.Model.createWTree();
+    var tbodyNode = Webdext.evaluateXPath(
+        '/html/body/section[2]/div/section[1]/div[2]/div[1]/table/tbody'
+    )[0];
+    var wTbodyNode = Webdext.Model.findWNode(tbodyNode, wTree);
+    var wNodeSet = wTbodyNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = segmentCoarseGrainedRegion(cgrs[0]);
+    assert.strictEqual(cRecSet.size(), 14, "cRecSet.size() != 14");
+    assert.strictEqual(
+        cRecSet.recordSet[0].toString(),
+        "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
+        "cRecSet.recordSet[0].toString()"
+    );
+});
+
+// headBasedCRecMine === orderBasedCRecMine
 console.log("End BCA test");

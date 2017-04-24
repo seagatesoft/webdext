@@ -183,4 +183,96 @@ WUnit.test("filterTreeClusters", function(assert) {
         "filteredCluster[0].length != wUlNode.children.length-3"
     );
 });
+
+WUnit.test("identifyCoarseGrainedRegions", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions;
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var wNodeSet = wUlNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    assert.strictEqual(cgrs.length, 1, "cgrs.length != 1");
+    assert.strictEqual(
+        cgrs[0].parent.valueOf(),
+        "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[2]/ul[1]",
+        "cgrs[0].parent.valueOf()"
+    );
+    assert.strictEqual(cgrs[0].minIndex, 1, "cgrs[0].minIndex != 1");
+    assert.strictEqual(cgrs[0].maxIndex, 12, "cgrs[0].maxIndex != 12");
+});
+
+WUnit.test("headBasedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var wNodeSet = wUlNode.children;
+    var cRecSet = Webdext.Extraction.headBasedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 12, "cRecSet.size() != 12");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[7].textContent,
+        "Far and Wide: Bring That Horizon to Me!",
+        "cRecSet.recordSet[0].getLeafNodes()[7].textContent"
+    );
+});
+
+WUnit.test("orderBasedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var wNodeSet = wUlNode.children;
+    var cRecSet = Webdext.Extraction.orderBasedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 12, "cRecSet.size() != 12");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[7].textContent,
+        "Far and Wide: Bring That Horizon to Me!",
+        "cRecSet.recordSet[0].getLeafNodes()[7].textContent"
+    );
+});
+
+WUnit.test("headOrderBasedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var wNodeSet = wUlNode.children;
+    var cRecSet = Webdext.Extraction.headOrderBasedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 12, "cRecSet.size() != 12");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[7].textContent,
+        "Far and Wide: Bring That Horizon to Me!",
+        "cRecSet.recordSet[0].getLeafNodes()[7].textContent"
+    );
+});
+
+WUnit.test("integratedCRecMine", function(assert) {
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var wNodeSet = wUlNode.children;
+    var cRecSet = Webdext.Extraction.integratedCRecMine(wNodeSet);
+    assert.strictEqual(cRecSet.size(), 12, "cRecSet.size() != 12");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[7].textContent,
+        "Far and Wide: Bring That Horizon to Me!",
+        "cRecSet.recordSet[0].getLeafNodes()[7].textContent"
+    );
+});
+
+WUnit.test("segmentCoarseGrainedRegion", function(assert) {
+    var identifyCoarseGrainedRegions = Webdext.Extraction.identifyCoarseGrainedRegions,
+        segmentCoarseGrainedRegion = Webdext.Extraction.segmentCoarseGrainedRegion;
+    var wTree = Webdext.Model.createWTree();
+    var ulNode = Webdext.evaluateXPath('//*[@id="mainResults"]/ul')[0];
+    var wUlNode = Webdext.Model.findWNode(ulNode, wTree);
+    var wNodeSet = wUlNode.children;
+    var cgrs = identifyCoarseGrainedRegions(wNodeSet);
+    var cRecSet = segmentCoarseGrainedRegion(cgrs[0]);
+    assert.strictEqual(cRecSet.size(), 12, "cRecSet.size() != 12");
+    assert.strictEqual(
+        cRecSet.recordSet[0].getLeafNodes()[7].textContent,
+        "Far and Wide: Bring That Horizon to Me!",
+        "cRecSet.recordSet[0].getLeafNodes()[7].textContent"
+    ); 
+});
+
+// headBasedCRecMine === orderBasedCRecMine
 console.log("End Amazon test");
