@@ -556,7 +556,7 @@
                 var currentTags = currentTagList.join(",");
 
                 if (currentTags === separatorTags) {
-                    if (subPart.length > 1) {
+                    if (subPart.length > 0) {
                         subPartList.push(subPart);
                     }
                     subPart = [];
@@ -568,8 +568,13 @@
             } else {
                 subPart.push.apply(subPart, siblings.slice(i));
                 subPartList.push(subPart);
+                subPart = [];
                 i = siblingsLength;
             }
+        }
+
+        if (subPart.length > 0) {
+            subPartList.push(subPart);
         }
 
         return subPartList;
@@ -873,9 +878,9 @@
         var wTree = createWTree();
         var bodyNode = evaluateXPath("/html/body")[0];
         var wBodyNode = findWNode(bodyNode, wTree);
-        var cRecSetList = mineCRecFromTree(wBodyNode);
-        var recSetList = mineRecFromCRec(cRecSetList);
-        return recSetList;
+        return mineCRecFromTree(wBodyNode);
+        // var cRecSetList = mineCRecFromTree(wBodyNode);
+        // var recSetList = mineRecFromCRec(cRecSetList);
         // return alignRecSetList(recSetList);
     }
 
@@ -884,6 +889,10 @@
         CoarseGrainedRegion: CoarseGrainedRegion,
         Record: Record,
         RecordSet: RecordSet,
+
+        isSubsetOfExistingCRecSet: isSubsetOfExistingCRecSet,
+        findSeparatorTagsSet: findSeparatorTagsSet,
+        separateSiblings: separateSiblings,        
 
         identifyCoarseGrainedRegions: identifyCoarseGrainedRegions,
         segmentCoarseGrainedRegion: segmentCoarseGrainedRegion,
