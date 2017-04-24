@@ -459,15 +459,14 @@
         return new RecordSet(recordSet);
     }
 
-    // @TODO: revisit the logic
     function mineCRecFromSubParts(subPartList) {
-        var firstSubPart = subPartList[0];
         var treeClusters = findClusters(
             subPartList,
             THRESHOLDS.TREE,
             clusterSimilarity,
             memoizedWTreeSimilarity
         );
+        var firstSubPart = subPartList[0];
         var treeCluster;
 
         for (var i=0; i < treeClusters.length; i++) {
@@ -477,19 +476,22 @@
             }
         }
 
-        if (treeCluster.length < 2) {
-            return null;
+        // @TODO: handle Error 1 and 2
+        var treeClusterLength = treeCluster.length,
+            treeClusterIndexes = [];
+
+        for (i=0; i < treeClusterLength; i++) {
+            treeClusterIndexes.push(subPartList.indexOf(treeCluster[i]));
         }
 
-        // @TODO: handle Error 1 and 2
-        var lastSubPart = treeCluster[treeCluster.length-1],
-            lastSubPartIndex = subPartList.indexOf(lastSubPart);
+        var lastSubPartIndexInTC = Math.max.apply(null, treeClusterIndexes);
+        var lastSubPartIndex = subPartList.length - 1;
 
-        if (lastSubPartIndex < (subPartList.length - 1)) {
+        if (lastSubPartIndexInTC < lastSubPartIndex) {
             return createRecordSetFromTreeCluster(treeCluster);
         }
 
-        if (lastSubPartIndex > 0) {
+        if (lastSubPartIndexInTC > 0) {
             return createRecordSetFromTreeCluster(treeCluster);
         }
 
