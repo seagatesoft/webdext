@@ -262,7 +262,7 @@
                 if (indexRange.min > cgr.minIndex) {
                     var leftSiblingNodes = cgr.parent.getChildrenSubset(
                         cgr.minIndex,
-                        indexRange.min
+                        indexRange.min-1
                     );
                     var leftCRecSetList = mineCRecFromNodeSet(leftSiblingNodes);
                     if (leftCRecSetList.length > 0) {
