@@ -1,0 +1,32 @@
+{
+  "name": "webdext",
+  "version": "0.0.1",
+  "description": "Intelligent Web Data Extractor",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/seagatesoft/webdext.git"
+  },
+  "keywords": [
+    "web",
+    "data",
+    "extraction",
+    "scraping"
+  ],
+  "author": "Sigit Dewanto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/seagatesoft/webdext/issues"
+  },
+  "homepage": "https://github.com/seagatesoft/webdext#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1"
+  }
+}
