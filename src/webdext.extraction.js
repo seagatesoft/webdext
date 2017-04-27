@@ -459,6 +459,52 @@
         return new RecordSet(recordSet);
     }
 
+    function generatePrefixSubparts(wNodeSet) {
+        var wNodeSetLength = wNodeSet.length,
+            prefixSubparts = [];
+
+        for (var i=1; i <= wNodeSetLength; i++) {
+            prefixSubparts.push(wNodeSet.slice(0, i));
+        }
+
+        return prefixSubparts;
+    }
+
+    function findSimilarPrefixSubpart(treeCluster, prefixSubparts) {
+        var prefixSubpartsLength = prefixSubparts.length,
+            similarPrefixSubparts = [];
+
+        for (var i=0; i < prefixSubpartsLength; i++) {
+            var prefixSubpart = prefixSubparts[i];
+            var similarity = clusterSimilarity(
+                treeCluster,
+                [prefixSubpart],
+                memoizedWTreeSimilarity
+            );
+
+            if (similarity > THRESHOLDS.TREE) {
+                similarPrefixSubparts.push(prefixSubpart);
+            }
+        }
+
+        var similarPrefixSubpartsLength = similarPrefixSubparts.length,
+            selectedRecordSet, maxCohesion;
+
+        for (i=0; i < similarPrefixSubpartsLength; i++) {
+            var prefixSubpart = similarPrefixSubparts[i];
+            var newTreeCluster = treeCluster.concat(prefixSubpart);
+            var rs = createRecordSetFromTreeCluster(newTreeCluster);
+            var rsCohesion = rs.getCohesion();
+
+            if (typeof maxCohesion === "undefined" || rsCohesion > maxCohesion) {
+                maxCohesion = rsCohesion;
+                selectedRecordSet = rs;
+            }
+        }
+
+        return selectedRecordSet;
+    }
+
     function mineCRecFromSubParts(subPartList) {
         var treeClusters = findClusters(
             subPartList,
@@ -476,7 +522,6 @@
             }
         }
 
-        // @TODO: handle Error 1 and 2
         var treeClusterLength = treeCluster.length,
             treeClusterIndexes = [];
 
@@ -488,11 +533,29 @@
         var lastSubPartIndex = subPartList.length - 1;
 
         if (lastSubPartIndexInTC < lastSubPartIndex) {
-            return createRecordSetFromTreeCluster(treeCluster);
+            var nextTree = subPartList[lastSubPartIndexInTC+1];
+            var prefixSubparts = generatePrefixSubparts(nextTree);
+            var recordSet = findSimilarPrefixSubpart(treeCluster, prefixSubparts);
+
+            if (recordSet) {
+                return recordSet;
+            }
         }
 
         if (lastSubPartIndexInTC > 0) {
-            return createRecordSetFromTreeCluster(treeCluster);
+            var lastTreeinTC = subPartList[lastSubPartIndexInTC];
+
+            if (lastTreeinTC.length === 1) {
+                return createRecordSetFromTreeCluster(treeCluster);
+            }
+
+            var prefixSubparts = generatePrefixSubparts(lastTreeinTC);
+            treeCluster.splice(treeCluster.indexOf(lastTreeinTC), 1);
+            var recordSet = findSimilarPrefixSubpart(treeCluster, prefixSubparts);
+
+            if (recordSet) {
+                return recordSet;
+            }
         }
 
         return null;
