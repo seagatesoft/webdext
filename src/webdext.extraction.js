@@ -492,7 +492,7 @@
 
         for (i=0; i < similarPrefixSubpartsLength; i++) {
             var prefixSubpart = similarPrefixSubparts[i];
-            var newTreeCluster = treeCluster.concat(prefixSubpart);
+            var newTreeCluster = treeCluster.concat([prefixSubpart]);
             var rs = createRecordSetFromTreeCluster(newTreeCluster);
             var rsCohesion = rs.getCohesion();
 
@@ -933,6 +933,23 @@
         return cRecSetList;
     }
 
+    function recordComparator(r1, r2) {
+        var r1FirstNodeSiblingIndex = r1.wNodeSet[0].getSiblingIndex();
+        var r2FirstNodeSiblingIndex = r2.wNodeSet[0].getSiblingIndex();
+
+        if (r1FirstNodeSiblingIndex < r2FirstNodeSiblingIndex) {
+            return -1;
+        } else if (r1FirstNodeSiblingIndex > r2FirstNodeSiblingIndex) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    function sortRecordSet(rs) {
+        rs.recordSet.sort(recordComparator);
+    }
+
     function alignRecSetList(cRecSet) {
         // @TODO
     }
@@ -973,7 +990,9 @@
         mineCRecFromNodeSet: mineCRecFromNodeSet,
 
         // @TODO: add test
-        mineRecFromCRec: mineRecFromCRec
+        mineRecFromCRec: mineRecFromCRec,
+
+        sortRecordSet: sortRecordSet
     };
     Webdext.extract = extract;
 }).call(this);
