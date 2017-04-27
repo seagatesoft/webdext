@@ -861,46 +861,57 @@
     }
 
     function mineRecFromCRec(cRecSetList) {
-        var recSetList = [];
+        var cRecSetListLength = cRecSetList.length,
+            recSetList = [];
 
-        cRecSetList.forEach(function(cRecSet) {
+        for (var i=0; i < cRecSetListLength; i++) {
+            var cRecSet = cRecSetList[i];
             var furtherCRecSet = furtherMineCRec(cRecSet);
 
-            if (furtherCRecSet.size() === 0) {
+            if (furtherCRecSet === null) {
                 recSetList.push(cRecSet);
             } else {
-                recSetList.push(mineRecFromCRec([furtherCRecSet]));
+                recSetList.push.apply(recSetList, mineRecFromCRec([furtherCRecSet]));
             }
-        });
+        }
 
         return recSetList;
     }
 
     function furtherMineCRec(cRecSet) {
-        var cRecSetList = [];
-        cRecSet.recordSet.forEach(function(cRec) {
-            var furtherCRecSetList = mineCRecFromTree(cRec.wNodeSet);
+        var cRecSetSize = cRecSet.size(),
+            cRecSetList = [];
+
+        for (var i=0; i < cRecSetSize; i++) {
+            var furtherCRecSetList = mineCRecFromTree(cRecSet.recordSet[i]);
             cRecSetList.push.apply(cRecSetList, furtherCRecSetList);
-        });
+        }
+
         cRecSetList = aggregateSimilarCRecSets(cRecSetList);
-        var areaList = cRecSetList.map(function(cRecSet) {
-            return cRecSet.getArea();
+        var areaList = cRecSetList.map(function(crs) {
+            return crs.getArea();
         });
         var maxArea = Math.max.apply(null, areaList);
         var maxCRecSet = cRecSetList[areaList.indexOf(maxArea)];
 
-        return maxArea > AREA_FACTOR * cRecSet.getArea() ? maxCRecSet : [];
+        return maxArea > AREA_FACTOR * cRecSet.getArea() ? maxCRecSet : null;
     }
 
     function recordSetSimilarity(recSet1, recSet2) {
-        var sum = 0;
-        recSet1.recordSet.forEach(function(record1) {
-            recSet2.recordSet.forEach(function(record2) {
-                sum += memoizedWTreeSimilarity(record1.wNodeSet, record2.wNodeSet);
-            });
-        });
+        var recSet1Size = recSet1.size(),
+            recSet2Size = recSet2.size(),
+            sum = 0;
 
-        return sum / (recSet1.size() * recSet2.size());
+        for (var i=0; i < recSet1Size; i++) {
+            for (var j=0; j < recSet2Size; j++) {
+                sum += memoizedWTreeSimilarity(
+                    recSet1.recordSet[i].wNodeSet,
+                    recSet2.recordSet[j].wNodeSet
+                );
+            }
+        }
+
+        return sum / (recSet1Size * recSet2Size);
     }
 
     function aggregateSimilarCRecSets(cRecSetList) {
@@ -914,7 +925,7 @@
                         cRecSetList[i],
                         cRecSetList[j]
                     );
-                    if (similarity >= THRESHOLDS.TREE) {
+                    if (similarity > THRESHOLDS.TREE) {
                         var recordSet = cRecSetList[i].recordSet.concat(cRecSetList[j].recordSet);
                         cRecSetList.splice(i, 1);
                         cRecSetList.splice(j-1, 1);
@@ -922,6 +933,10 @@
                         anyMerging = true;
                         break;
                     }
+                }
+
+                if (anyMerging) {
+                    break;
                 }
             }
 
@@ -958,9 +973,9 @@
         var wTree = createWTree();
         var bodyNode = evaluateXPath("/html/body")[0];
         var wBodyNode = findWNode(bodyNode, wTree);
-        return mineCRecFromTree(wBodyNode);
-        // var cRecSetList = mineCRecFromTree(wBodyNode);
-        // var recSetList = mineRecFromCRec(cRecSetList);
+        var cRecSetList = mineCRecFromTree(wBodyNode);
+        var recSetList = mineRecFromCRec(cRecSetList);
+        return recSetList;
         // return alignRecSetList(recSetList);
     }
 
@@ -988,6 +1003,10 @@
         mineCRecFromTree: mineCRecFromTree,
         // @TODO : add test 
         mineCRecFromNodeSet: mineCRecFromNodeSet,
+
+        furtherMineCRec: furtherMineCRec,
+        recordSetSimilarity: recordSetSimilarity,
+        aggregateSimilarCRecSets: aggregateSimilarCRecSets,
 
         // @TODO: add test
         mineRecFromCRec: mineRecFromCRec,
