@@ -251,5 +251,31 @@ WUnit.test("segmentCoarseGrainedRegion", function(assert) {
     );
 });
 
+WUnit.test("extract", function(assert) {
+    var recSetList = Webdext.extract();
+    assert.strictEqual(recSetList.length, 12, "recSetList.length != 12");
+    assert.strictEqual(recSetList[5].size(), 14, "recSetList[5].size() != 14");
+    assert.strictEqual(
+        recSetList[5].recordSet[0].toString(),
+        "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
+        "recSetList[5].recordSet[0] != ..."
+    );
+    assert.strictEqual(
+        recSetList[5].recordSet[1].toString(),
+        "SGD, 9.552,79, 9.532,79, 9.573,60, 9.495,60, 9.653,00, 9.430,00",
+        "recSetList[5].recordSet[1] != ..."
+    );
+    assert.strictEqual(
+        recSetList[5].recordSet[13].toString(),
+        "CNY, 1.995,42, 1.875,42, 2.017,65, 1.852,55, 1.991,00, 1.863,00",
+        "recSetList[5].recordSet[13] != ..."
+    );
+    assert.strictEqual(
+        recSetList[5].recordSet[12].toString(),
+        "SAR, 3.590,81, 3.510,81, 3.601,25, 3.497,25, 3.628,00, 3.458,00",
+        "recSetList[5].recordSet[12] != ..."
+    );
+});
+
 // headBasedCRecMine === orderBasedCRecMine
 console.log("End BCA test");

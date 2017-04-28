@@ -868,7 +868,7 @@
             var cRecSet = cRecSetList[i];
             var furtherCRecSet = furtherMineCRec(cRecSet);
 
-            if (furtherCRecSet === null) {
+            if (furtherCRecSet === null || isSingleColumnTable(furtherCRecSet)) {
                 recSetList.push(cRecSet);
             } else {
                 recSetList.push.apply(recSetList, mineRecFromCRec([furtherCRecSet]));
@@ -876,6 +876,12 @@
         }
 
         return recSetList;
+    }
+
+    function isSingleColumnTable(cRecSet) {
+        return cRecSet.recordSet.every(function (record) {
+            return record.getLeafNodes().length === 1;
+        });
     }
 
     function furtherMineCRec(cRecSet) {
@@ -974,6 +980,12 @@
         var bodyNode = evaluateXPath("/html/body")[0];
         var wBodyNode = findWNode(bodyNode, wTree);
         var cRecSetList = mineCRecFromTree(wBodyNode);
+        var cRecSetListLength = cRecSetList.length;
+
+        for (var i=cRecSetListLength; i--; ) {
+            sortRecordSet(cRecSetList[i]);
+        }
+
         var recSetList = mineRecFromCRec(cRecSetList);
         return recSetList;
         // return alignRecSetList(recSetList);
