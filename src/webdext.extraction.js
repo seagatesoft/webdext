@@ -1005,22 +1005,18 @@
         segmentCoarseGrainedRegion: segmentCoarseGrainedRegion,
 
         integratedCRecMine: integratedCRecMine,
-        // @TODO : add test 
         separatorBasedCRecMine: separatorBasedCRecMine,
         headOrderBasedCRecMine: headOrderBasedCRecMine,
         headBasedCRecMine: headBasedCRecMine,
         orderBasedCRecMine: orderBasedCRecMine,
 
-        // @TODO : add test 
         mineCRecFromTree: mineCRecFromTree,
-        // @TODO : add test 
         mineCRecFromNodeSet: mineCRecFromNodeSet,
 
         furtherMineCRec: furtherMineCRec,
         recordSetSimilarity: recordSetSimilarity,
         aggregateSimilarCRecSets: aggregateSimilarCRecSets,
 
-        // @TODO: add test
         mineRecFromCRec: mineRecFromCRec,
 
         sortRecordSet: sortRecordSet
