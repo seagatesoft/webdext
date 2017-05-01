@@ -24,6 +24,10 @@
         IMAGE_NODE: 0.9,
         TREE: 0.5,
     };
+    var MATCH_WEIGHTS = {
+        VISUALLY_ALIGNED: 3,
+        NOT_VISUALLY_ALIGNED: 0.1
+    };
 
     var treeClusterMap = new Map();
 
@@ -614,6 +618,37 @@
         return clusters;
     }
 
+    function isVisuallyAligned(wNode1, wNode2) {
+        if (wNode1.tagName !== wNode2.tagName) {
+            return false;
+        }
+
+        var isSameLeftCoord = wNode1.coordinate.left === wNode2.coordinate.left;
+        var isSameTopCoord = wNode1.coordinate.top === wNode2.coordinate.top;
+
+        return isSameLeftCoord || isSameTopCoord;
+    }
+
+    // what if both nodes are leaf nodes without data? (separator)
+    // how about data type?
+    function wNodeMatchWeight(wNode1, wNode2) {
+        var isWNode1Leaf = wNode1.isLeafNode(),
+            isWNode2Leaf = wNode2.isLeafNode();
+
+        if (isWNode1Leaf && isWNode2Leaf) {
+            return wNodeSimilarity(wNode1, wNode2);
+        }
+        else if (!isWNode1Leaf && !isWNode2Leaf) {
+            if (isVisuallyAligned(wNode1, wNode2)) {
+                return MATCH_WEIGHTS.VISUALLY_ALIGNED;
+            } else {
+                return MATCH_WEIGHTS.NOT_VISUALLY_ALIGNED;
+            }
+        }
+
+        return 0;
+    }
+
     // exports
     Webdext.Similarity = {
         THRESHOLDS: THRESHOLDS,
@@ -637,6 +672,8 @@
         memoizedWTextNodeSimilarity: memoizedWTextNodeSimilarity,
         memoizedWHyperlinkNodeSimilarity: memoizedWHyperlinkNodeSimilarity,
         memoizedWImageNodeSimilarity: memoizedWImageNodeSimilarity,
+
+        wNodeMatchWeight: wNodeMatchWeight,
 
         // @TODO add test
         clusterSimilarity: clusterSimilarity,

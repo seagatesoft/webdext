@@ -4,6 +4,8 @@
     // imports
     var evaluateXPath = Webdext.evaluateXPath,
         DATA_TYPE = Webdext.Model.DATA_TYPE,
+        Vertex = Webdext.Model.Vertex,
+        DirectedAcyclicGraph = Webdext.Model.DirectedAcyclicGraph,
         WNode = Webdext.Model.WNode,
         WElementNode = Webdext.Model.WElementNode,
         createWTree = Webdext.Model.createWTree,
@@ -12,7 +14,8 @@
         clusterSimilarity = Webdext.Similarity.clusterSimilarity,
         findClusters = Webdext.Similarity.findClusters,
         memoizedWTreeSimilarity = Webdext.Similarity.memoizedWTreeSimilarity,
-        clusterWTrees = Webdext.Similarity.clusterWTrees;
+        clusterWTrees = Webdext.Similarity.clusterWTrees,
+        wNodeMatchWeight = Webdext.Similarity.wNodeMatchWeight;
 
     var AREA_FACTOR = 0.8;
 
@@ -62,29 +65,17 @@
     Record.prototype.toString = function() {
         var leafNodes = this.getLeafNodes();
         var leafNodesLength = leafNodes.length,
-            nodeValues = [];
+            dataContents = [];
 
         for (var i=0; i < leafNodesLength; i++) {
-            var wNode = leafNodes[i];
+            var leafNode = leafNodes[i];
 
-            if (wNode.dataType === DATA_TYPE.TEXT) {
-                nodeValues.push(wNode.textContent);
-            } else if (wNode.dataType === DATA_TYPE.HYPERLINK) {
-                if (wNode.href === null) {
-                    nodeValues.push("");
-                } else {
-                    nodeValues.push(wNode.href.url);
-                }
-            } else if (wNode.dataType === DATA_TYPE.IMAGE) {
-                if (wNode.src === null) {
-                    nodeValues.push("");
-                } else {
-                    nodeValues.push(wNode.src.url);
-                }
+            if (!leafNode.isSeparatorNode()) {
+                dataContents.push(leafNode.dataContent);
             }
         }
 
-        return nodeValues.join(", ");
+        return dataContents.join(", ");
     };
     Record.prototype.getAverageSimilarity = function() {
         var sumSimilarity = 0,
@@ -121,6 +112,7 @@
 
     function RecordSet(recSet) {
         this.recordSet = recSet;
+        this.dataItems = null;
     }
     RecordSet.prototype.size = function() {
         return this.recordSet.length;
@@ -188,6 +180,12 @@
         var avgCRecordsSimilarity = this.getSumOfCRecordSimilarity() / this.recordSet.length;
 
         return this.getAverageSimilarity() / (1 + avgCRecordsSimilarity);
+    };
+    RecordSet.prototype.numOfColumns = function() {
+        return this.dataItems[0].length;
+    };
+    RecordSet.prototype.getDataItem = function(row, column) {
+        return this.dataItems[row][column].dataContent;
     };
 
     /**
@@ -737,78 +735,22 @@
         return mineCRecFromSubParts(subPartList);
     }
 
-    function DirectedAcyclicGraph(clusters) {
-        this.clusters = clusters;
-        this.graph = new Map();
-        for (var i=0, clustersLength=this.clusters.length; i < clustersLength; i++) {
-            this.graph.set(this.clusters[i], []);
-        }
-    }
-    DirectedAcyclicGraph.prototype._isBeforeOrder = function(cluster1, cluster2) {
-        var afterCluster1 = this.graph.get(cluster1);
-
-        if (afterCluster1.length === 0) {
-            return false;
-        }
-
-        if (afterCluster1.indexOf(cluster2) > -1) {
-            return true;
-        }
-
-        for (var i=0; i < afterCluster1.length; i++) {
-            var isBefore = this._isBeforeOrder(afterCluster1[i], cluster2);
-            if (isBefore) {
-                return true;
-            }
-        }
-
-        return false;
-    };
-    DirectedAcyclicGraph.prototype.isBeforeOrder = function(wNode1, wNode2) {
-        var cluster1 = null,
-            cluster2 = null,
-            clustersLength = this.clusters.length;
-
-        for (var i=0; i < clustersLength; i++) {
-            var currentCluster = this.clusters[i];
-
-            if (currentCluster.indexOf(wNode1) > -1) {
-                cluster1 = currentCluster;
-            }
-
-            if (currentCluster.indexOf(wNode2) > -1) {
-                cluster2 = currentCluster;
-            }
-
-            if (cluster1 !== null && cluster2 !== null) {
-                break;
-            }
-        }
-
-        if (cluster1 === cluster2) {
-            return false;
-        }
-
-        var isCluster1BeforeCluster2 = this._isBeforeOrder(cluster1, cluster2);
-        var isCluster2BeforeCluster1 = this._isBeforeOrder(cluster2, cluster1);
-
-        if (isCluster1BeforeCluster2) {
-            return true;
-        }
-
-        if (isCluster2BeforeCluster1) {
-            return false;
-        }
-
-        var afterCluster1 = this.graph.get(cluster1);
-        afterCluster1.push(cluster2);
-
-        return true;
-    };
-
     function orderBasedCRecMine(wNodeSet) {
         var clusters = clusterWTrees(wNodeSet);
-        var dag = new DirectedAcyclicGraph(clusters);
+        var clustersLength = clusters.length,
+            vertices = [];
+
+        for (var i=clustersLength; i--; ) {
+            var cluster = clusters[i];
+            var vertex = new Vertex(cluster);
+            vertices.push(vertex);
+
+            for (var j=cluster.length; j--; ) {
+                cluster[j].vertex = vertex;
+            }
+        }
+
+        var dag = new DirectedAcyclicGraph(vertices);
         var subPartList = [],
             wNodeSetLength = wNodeSet.length,
             maxIndex = wNodeSetLength-1,
@@ -817,13 +759,17 @@
         while (i < wNodeSetLength) {
             var j = i;
 
-            while (j < maxIndex && dag.isBeforeOrder(wNodeSet[j], wNodeSet[j+1])) {
+            while (j < maxIndex && dag.isBeforeOrder(wNodeSet[j].vertex, wNodeSet[j+1].vertex)) {
                 j++;
             }
 
             
             subPartList.push(wNodeSet.slice(i, j+1));
             i = j + 1;
+        }
+
+        for (var i=wNodeSetLength; i--; ) {
+            delete wNodeSet[i].vertex;
         }
 
         return mineCRecFromSubParts(subPartList);
@@ -971,8 +917,251 @@
         rs.recordSet.sort(recordComparator);
     }
 
-    function alignRecSetList(cRecSet) {
-        // @TODO
+    function multiFeatureTreeMatching(wTree1, wTree2) {
+        if (Array.isArray(wTree1) && Array.isArray(wTree2)) {
+            var children1 = wTree1;
+            var children2 = wTree2;
+        } else {
+            if (wTree1.isLeafNode() && wTree2.isLeafNode()) {
+                var pairs = [
+                    {
+                        weight: wNodeMatchWeight(wTree1, wTree2),
+                        wNode1: wTree1,
+                        wNode2: wTree2
+                    }
+                ];
+                return {pairs: pairs, totalWeight: pairs[0].weight};
+            } else if (wTree1.tagName !== wTree2.tagName) {
+                var pairs = [
+                    {
+                        weight: 0,
+                        wNode1: wTree1,
+                        wNode2: wTree2
+                    }
+                ];
+                return {pairs: pairs, totalWeight: pairs[0].weight};
+            }
+
+            var children1 = wTree1.children;
+            var children2 = wTree2.children;
+            var totalWeight = wNodeMatchWeight(wTree1, wTree2);
+        }
+
+        var STEP = {
+                "Alignment": 0,
+                "Insertion": 1,
+                "Deletion": 2
+            },
+            children1Length = children1.length,
+            children2Length = children2.length,
+            m = new Array(children1Length+1),
+            steps = new Array(children1Length+1);
+        
+        for (var i=0; i <= children1Length; i++) {
+            m[i] = new Array(children2Length+1);
+            m[i][0] = 0;
+            steps[i] = new Array(children2Length+1);
+
+            if (i === 0) {
+                steps[i][0] = STEP.Alignment;
+            } else {
+                steps[i][0] = STEP.Deletion;
+            }
+        }
+
+        for (var j=1; j <= children2Length; j++) {
+            m[0][j] = 0;
+            steps[0][j] = STEP.Insertion;
+        }
+
+        for (i=1; i <= children1Length; i++) {
+            for (j=1; j <= children2Length; j++) {
+                var match = multiFeatureTreeMatching(children1[i-1], children2[j-1]);
+                var alignment = m[i-1][j-1] + match.totalWeight;
+                var insertion = m[i][j-1];
+                var deletion = m[i-1][j];
+
+                m[i][j] = Math.max(alignment, insertion, deletion);
+
+                if (m[i][j] === alignment) {
+                    steps[i][j] = STEP.Alignment;
+                } else if (m[i][j] === insertion) {
+                    steps[i][j] = STEP.Insertion;
+                } else if (m[i][j] === deletion) {
+                    steps[i][j] = STEP.Deletion;
+                }
+            }
+        }
+
+        i = children1Length;
+        j = children2Length;
+        var alignedPairs = [];
+
+        while(i > 0 || j > 0) {
+            var step = steps[i][j];
+            if (step === STEP.Alignment) {
+                alignedPairs.push({
+                    weight: m[i][j],
+                    wNode1: children1[i-1],
+                    wNode2: children2[i-1]
+                });
+                totalWeight += m[i][j];
+                i--;
+                j--;
+            } else if (step === STEP.Insertion) {
+                j--;
+            } else if (step === STEP.Deletion) {
+                i--;
+            }
+        }
+
+        return {pairs: alignedPairs.reverse(), totalWeight: totalWeight};
+    }
+
+    function matchComparator(match1, match2) {
+        if (match1.weight < match2.weight) {
+            return -1;
+        } else if (match1.weight > match2.weight) {
+            return 1;
+        } else {
+            return 0;
+        }   
+    }
+
+    function dagMtm(wTreeSet, recNum) {
+        var wTreeSetLength = wTreeSet.length;
+
+        if (wTreeSetLength === 0) {
+            return [];
+        }
+
+        var childNodeSetList = [];
+
+        if (wTreeSet[0] instanceof Record) {
+            for (var i=0; i < wTreeSetLength; i++) {
+                var record = wTreeSet[i];
+                childNodeSetList.push(record.wNodeSet);
+                var recordWNodeSetLength = record.wNodeSet.length;
+
+                for (var j=recordWNodeSetLength; j--; ) {
+                    record.wNodeSet[j].rowNumber = i;                   
+                }
+            }
+        } else {
+            var wNodeSet = wTreeSet;
+
+            var allAreSeparatorNodes = true;
+            for (var i=wTreeSetLength; i--; ) {
+                if (!wNodeSet[i].isSeparatorNode()) {
+                    allAreSeparatorNodes = false;
+                    break;
+                }
+            }
+
+            if (allAreSeparatorNodes) {
+                return [];
+            }
+
+            var anyDataItemNode = false;
+            for (var i=wTreeSetLength; i--; ) {
+                if (wNodeSet[i].dataType) {
+                    anyDataItemNode = true;
+                    break;
+                }
+            }
+
+            if (anyDataItemNode) {
+                var dataItems = new Array(recNum);
+                for (var i=0; i < recNum; i++) {
+                    var wNode = wNodeSet[i];
+                    dataItems[wNode.rowNumber] = [wNode];
+                }
+
+                return dataItems;
+            }
+
+            for (var i=0; i < wTreeSetLength; i++) {
+                var wNode = wNodeSet[i];
+                childNodeSetList.push(wNode.children);
+                var childrenCount = wNode.childrenCount();
+
+                for (var j=childrenCount; j--; ) {
+                    wNode.children[j].rowNumber = wNode.rowNumber;
+                }
+            }
+        }
+        
+        var childNodeSetListLength = childNodeSetList.length,
+            vertices = [],
+            dag = new DirectedAcyclicGraph();
+
+        for (var i=0; i < childNodeSetListLength; i++) {
+            var childNodeSet = childNodeSetList[i];
+            var childNodeSetLength = childNodeSet.length;
+
+            for (var j=0; j < childNodeSetLength; j++) {
+                var childNode = childNodeSet[j];
+                var vertex = new Vertex([childNode]);
+                dag.addVertex(vertex);
+                childNode.vertex = vertex;
+
+                if (j > 0) {
+                    dag.createEdge(childNodeSet[j-1].vertex, childNode.vertex);
+                }
+            }
+        }
+
+        var pairwiseAlignments = [];
+        for (var i=0; i < childNodeSetListLength-1; i++) {
+            for (var j=i; i < childNodeSetListLength; i++) {
+                var match = multiFeatureTreeMatching(childNodeSetList[i], childNodeSetList[j]);
+                pairwiseAlignments.push.apply(pairwiseAlignments, match.pairs);                
+            }
+        }
+        pairwiseAlignments.sort(matchComparator);
+
+        while (pairwiseAlignments.length > 0) {
+            var pa = pairwiseAlignments.pop();
+            
+            if (dag.isPathExists(pa.wNode1.vertex, pa.wNode2.vertex)) {
+                continue;
+            }
+
+            var mergedVertex = dag.mergeVertices(pa.wNode1.vertex, pa.wNode2.vertex);
+            var mergedVertexDataLength = mergedVertex.data.length;
+
+            for (var i=mergedVertexDataLength; i--; ) {
+                mergedVertex.data[i].vertex = mergedVertex;
+            }
+        }
+
+        var numOfVertices = dag.numOfVertices();
+        var dataItemSet = new Array[recNum];
+        for (var i=0; i < recNum; i++) {
+            dataItemSet[i] = [];
+        }
+
+        for (var i=0; i < numOfVertices; i++) {
+            var dataItems = dagMtm(dag.vertices[i].data, recNum);
+            if (dataItems.length > 0) {
+                for (var j=0; j < recNum; j++) {
+                    dataItemSet[j].push.apply(dataItemSet[j], dataItems[j]);
+                }
+            }
+        }
+
+        return dataItemSet;
+    }
+
+    function alignRecordSet(recSet) {
+        var recNum = recSet.size();
+        var dataItemSet = dagMtm(recSet.recordSet, recNum);
+
+        for (var i=recNum; i--; ) {
+            recSet.recordSet[i].dataItems = dataItemSet[i];
+        }
+
+        return recSet;
     }
 
     function extract() {
@@ -987,8 +1176,19 @@
         }
 
         var recSetList = mineRecFromCRec(cRecSetList);
+
         return recSetList;
-        // return alignRecSetList(recSetList);
+
+        // console.profile("Alignment");
+        // var recSetListLength = recSetList.length,
+        //     alignedRecSetList = [];
+
+        // for (i=0; i < recSetListLength; i++) {
+        //     alignedRecSetList.push(alignRecordSet(recSetList[i]));
+        // }
+        // console.profileEnd("Alignment");
+        
+        // return alignedRecSetList;
     }
 
     // exports

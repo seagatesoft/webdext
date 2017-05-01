@@ -5,9 +5,9 @@
     var evaluateXPath = Webdext.evaluateXPath;
 
     var DATA_TYPE = {
-        TEXT: 0,
-        HYPERLINK: 1,
-        IMAGE: 2
+        TEXT: 1,
+        HYPERLINK: 2,
+        IMAGE: 3
     };
     var SKIP_ELEMENTS = ["SCRIPT", "STYLE", "OBJECT", "PARAM"];
 
@@ -98,6 +98,135 @@
             }
         );
     }
+
+    function Vertex(data) {
+        if (data) {
+            this.data = data;
+        } else {
+            this.data = [];
+        }
+    }
+
+    function DirectedAcyclicGraph(vertices) {
+        if (vertices) {
+            this.vertices = vertices;
+        } else {
+            this.vertices = [];
+        }
+
+        this.outboundMap = new Map();
+    }
+
+    DirectedAcyclicGraph.prototype.addVertex = function(vertex) {
+        this.vertices.push(vertex);
+    };
+    DirectedAcyclicGraph.prototype.numOfVertices = function() {
+        return this.vertices.length;
+    };
+    DirectedAcyclicGraph.prototype.createEdge = function(fromVertex, toVertex) {
+        var outboundVertices = this.outboundMap.get(fromVertex);
+        if (outboundVertices) {
+            if (outboundVertices.indexOf(toVertex) === -1) {
+                outboundVertices.push(toVertex);
+            }
+        } else {
+            outboundVertices = [toVertex];
+        }
+    };
+    DirectedAcyclicGraph.prototype._isBeforeOrder = function(vertex1, vertex2) {
+        var outboundVertices = this.outboundMap.get(vertex1);
+
+        if (!outboundVertices) {
+            return false;
+        }
+
+        if (outboundVertices.indexOf(vertex2) > -1) {
+            return true;
+        }
+
+        for (var i=outboundVertices.length; i--; ) {
+            if (this._isBeforeOrder(outboundVertices[i], vertex2)) {
+                return true;
+            }
+        }
+
+        return false;
+    };
+    DirectedAcyclicGraph.prototype.isBeforeOrder = function(vertex1, vertex2) {
+        if (vertex1 === vertex2) {
+            return false;
+        }
+
+        var isVertex1BeforeVertex2 = this._isBeforeOrder(vertex1, vertex2);
+        var isVertex2BeforeVertex1 = this._isBeforeOrder(vertex2, vertex1);
+
+        if (isVertex1BeforeVertex2) {
+            return true;
+        }
+
+        if (isVertex2BeforeVertex1) {
+            return false;
+        }
+
+        this.createEdge(vertex1, vertex2);
+
+        return true;
+    };
+    DirectedAcyclicGraph.prototype.isPathExists = function(vertex1, vertex2) {
+        if (vertex1 === vertex2) {
+            return true;
+        }
+
+        var isVertex1BeforeVertex2 = this._isBeforeOrder(vertex1, vertex2);
+        var isVertex2BeforeVertex1 = this._isBeforeOrder(vertex2, vertex1);
+
+        return isVertex1BeforeVertex2 || isVertex2BeforeVertex1;
+    };
+    DirectedAcyclicGraph.prototype.mergeVertices = function(vertex1, vertex2) {
+        var mergedData = vertex1.data.concat(vertex2.data);
+        var mergedVertex = new Vertex(mergedData);
+        this.vertices.splice(this.vertices.indexOf(vertex1), 1);
+        this.vertices.splice(this.vertices.indexOf(vertex2), 1);
+        this.vertices.push(mergedVertex);
+
+        var outboundVertices1 = this.outboundMap.get(vertex1);
+        var outboundVertices2 = this.outboundMap.get(vertex2);
+
+        if (!outboundVertices1 && !Array.isArray(outboundVertices1)) {
+            outboundVertices1 = [];
+        }
+
+        if (!outboundVertices2 && !Array.isArray(outboundVertices2)) {
+            outboundVertices2 = [];
+        }
+
+        var outboundVertices = outboundVertices1.concat(outboundVertices2);
+        this.outboundMap.delete(vertex1);
+        this.outboundMap.delete(vertex2);
+        this.outboundMap.set(mergedVertex, outboundVertices);
+
+        var valueIterator = this.outboundMap.values(),
+            value = valueIterator.next();
+
+        while (!value.done) {
+            var indexOfVertex1 = value.value.indexOf(vertex1);
+            var indexOfVertex2 = value.value.indexOf(vertex2);
+
+            if (indexOfVertex1 > -1) {
+                value.value.splice(indexOfVertex1, 1);
+            }
+
+            if (indexOfVertex2 > -1) {
+                value.value.splice(indexOfVertex2, 1);
+            }
+
+            if (indexOfVertex1 > -1 || indexOfVertex2 > -1) {
+                value.value.push(mergedVertex);
+            }
+        }
+
+        return mergedVertex;
+    };
 
     function normVector(vector) {
         var values = [];
@@ -444,7 +573,11 @@
         this.rectangleSize = {
             "width": rect.width,
             "height": rect.height
-        };    
+        };
+        this.coordinate = {
+            "top": rect.top,
+            "left": rect.left
+        };
     }
     WElementNode.prototype = Object.create(
         WNode.prototype,
@@ -454,6 +587,23 @@
                 enumerable: true,
                 value: WElementNode,
                 writable: true
+            },
+            dataContent: {
+                get: function() {
+                    var leafNodes = this.getLeafNodes();
+                    var leafNodesLength = leafNodes.length;
+                    var dc = [];
+
+                    for (var i=0; i < leafNodesLength; i++) {
+                        var leafNode = leafNodes[i];
+
+                        if (!leafNode.isSeparatorNode()) {
+                            dc.push(leafNode.dataContent);
+                        }
+                    }
+
+                    return dc.join(" ");
+                }
             }
         }
     );
@@ -575,6 +725,11 @@
                 enumerable: true,
                 value: WTextNode,
                 writable: true
+            },
+            dataContent: {
+                get: function() {
+                    return this.textContent;
+                }
             }
         }
     );
@@ -609,6 +764,15 @@
                 enumerable: true,
                 value: WHyperlinkNode,
                 writable: true
+            },
+            dataContent: {
+                get: function() {
+                    if (this.href) {
+                        return this.href.url;
+                    }
+
+                    return "";
+                }
             }
         }
     );
@@ -645,6 +809,15 @@
                 enumerable: true,
                 value: WImageNode,
                 writable: true
+            },
+            dataContent: {
+                get: function() {
+                    if (this.src) {
+                        return this.src.url;
+                    }
+
+                    return "";
+                }
             }
         }
     );
@@ -759,6 +932,9 @@
     Webdext.Model = {
         DATA_TYPE: DATA_TYPE,
         SKIP_ELEMENTS: SKIP_ELEMENTS,
+
+        Vertex: Vertex,
+        DirectedAcyclicGraph: DirectedAcyclicGraph,
 
         normVector: normVector,
         parseUrl: parseUrl,
