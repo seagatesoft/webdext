@@ -9,7 +9,7 @@
         HYPERLINK: 2,
         IMAGE: 3
     };
-    var SKIP_ELEMENTS = ["SCRIPT", "STYLE", "OBJECT", "PARAM"];
+    var SKIP_ELEMENTS = ["SCRIPT", "STYLE", "OBJECT", "PARAM", "SVG"];
 
     var nodeIndexCounter = 0;
 
