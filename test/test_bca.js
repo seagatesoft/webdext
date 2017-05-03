@@ -254,26 +254,52 @@ WUnit.test("segmentCoarseGrainedRegion", function(assert) {
 WUnit.test("extractDataRecords", function(assert) {
     var recSetList = Webdext.Extraction.extractDataRecords();
     assert.strictEqual(recSetList.length, 13, "recSetList.length != 13");
-    assert.strictEqual(recSetList[5].size(), 14, "recSetList[5].size() != 14");
+    assert.strictEqual(recSetList[1].size(), 14, "recSetList[5].size() != 14");
     assert.strictEqual(
-        recSetList[5].recordSet[0].toString(),
+        recSetList[1].recordSet[0].toString(),
         "USD, 13.324,00, 13.308,00, 13.459,00, 13.159,00, 13.459,00, 13.159,00",
-        "recSetList[5].recordSet[0] != ..."
+        "recSetList[1].recordSet[0] != ..."
     );
     assert.strictEqual(
-        recSetList[5].recordSet[1].toString(),
+        recSetList[1].recordSet[1].toString(),
         "SGD, 9.552,79, 9.532,79, 9.573,60, 9.495,60, 9.653,00, 9.430,00",
-        "recSetList[5].recordSet[1] != ..."
+        "recSetList[1].recordSet[1] != ..."
     );
     assert.strictEqual(
-        recSetList[5].recordSet[13].toString(),
+        recSetList[1].recordSet[13].toString(),
         "CNY, 1.995,42, 1.875,42, 2.017,65, 1.852,55, 1.991,00, 1.863,00",
-        "recSetList[5].recordSet[13] != ..."
+        "recSetList[1].recordSet[13] != ..."
     );
     assert.strictEqual(
-        recSetList[5].recordSet[12].toString(),
+        recSetList[1].recordSet[12].toString(),
         "SAR, 3.590,81, 3.510,81, 3.601,25, 3.497,25, 3.628,00, 3.458,00",
-        "recSetList[5].recordSet[12] != ..."
+        "recSetList[1].recordSet[12] != ..."
+    );
+});
+
+WUnit.test("extract", function(assert) {
+    var recSetList = Webdext.extract();
+    assert.strictEqual(recSetList.length, 13, "recSetList.length != 13");
+    assert.strictEqual(recSetList[1].size(), 14, "recSetList[5].size() != 14");
+    assert.strictEqual(
+        recSetList[1].recordSet[0].dataItems[0].dataContent,
+        "USD",
+        "recSetList[1].recordSet[0].dataItems[0].dataContent != USD"
+    );
+    assert.strictEqual(
+        recSetList[1].recordSet[0].dataItems[6].dataContent,
+        "13.159,00",
+        "recSetList[1].recordSet[0].dataItems[6].dataContent != 13.159,00"
+    );
+    assert.strictEqual(
+        recSetList[1].recordSet[13].dataItems[0].dataContent,
+        "CNY",
+        "recSetList[1].recordSet[0].dataItems[0].dataContent != CNY"
+    );
+    assert.strictEqual(
+        recSetList[1].recordSet[13].dataItems[6].dataContent,
+        "1.863,00",
+        "recSetList[1].recordSet[13].dataItems[6].dataContent != 1.863,00"
     );
 });
 

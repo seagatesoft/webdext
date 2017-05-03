@@ -11,6 +11,8 @@
     };
     var SKIP_ELEMENTS = ["SCRIPT", "STYLE", "OBJECT", "PARAM"];
 
+    var nodeIndexCounter = 0;
+
     /*
      * When native Map implementation is not available on the environment 
      */
@@ -561,6 +563,7 @@
     }
 
     function WNode(node, wParent) {
+        this.nodeIndex = null;
         this.indexedXPath = getIndexedXPath(node);
 
         if (typeof wParent === "undefined" || wParent === null) {
@@ -856,19 +859,23 @@
             // don't create WTextNode for whitespace between elements
             if (node.nodeValue.trim().replace(/\s+/, " ") !== "") {
                 wNode = new WTextNode(node, wParent);
+                wNode.nodeIndex = nodeIndexCounter++;
             }
         } else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.nodeName.toUpperCase() === "IMG") {
                 wNode = new WImageNode(node, wParent);
+                wNode.nodeIndex = nodeIndexCounter++;
             } else {
                 try {
                     wNode = new WElementNode(node, wParent);
+                    wNode.nodeIndex = nodeIndexCounter++;
                 } catch (error) {
                     console.error(error);
                 }
 
                 if (node.nodeName.toUpperCase() === "A") {
-                    new WHyperlinkNode(node, wNode);
+                    var wHyperlinkNode = new WHyperlinkNode(node, wNode);
+                    wHyperlinkNode.nodeIndex = nodeIndexCounter++;
                 }
             }
         }

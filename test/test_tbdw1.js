@@ -401,26 +401,52 @@ WUnit.test("segmentCoarseGrainedRegion", function(assert) {
 WUnit.test("extractDataRecords", function(assert) {
     var recSetList = Webdext.Extraction.extractDataRecords();
     assert.strictEqual(recSetList.length, 4, "recSetList.length != 4");
-    assert.strictEqual(recSetList[1].size(), 20, "recSetList[1].size() != 20");
+    assert.strictEqual(recSetList[0].size(), 20, "recSetList[0].size() != 20");
     assert.strictEqual(
-        recSetList[1].recordSet[0].getLeafNodes()[0].textContent,
+        recSetList[0].recordSet[0].getLeafNodes()[0].textContent,
         "1.",
-        "recSetList[1].recordSet[0].getLeafNodes()[0].textContent"
+        "recSetList[0].recordSet[0].getLeafNodes()[0].textContent"
     );
     assert.strictEqual(
-        recSetList[1].recordSet[1].getLeafNodes()[0].textContent,
+        recSetList[0].recordSet[1].getLeafNodes()[0].textContent,
         "2.",
-        "recSetList[1].recordSet[1].getLeafNodes()[0].textContent"
+        "recSetList[0].recordSet[1].getLeafNodes()[0].textContent"
     );
     assert.strictEqual(
-        recSetList[1].recordSet[19].getLeafNodes()[0].textContent,
+        recSetList[0].recordSet[19].getLeafNodes()[0].textContent,
         "20.",
         "recSetList[1].recordSet[19].getLeafNodes()[0].textContent"
     );
     assert.strictEqual(
-        recSetList[1].recordSet[18].getLeafNodes()[0].textContent,
+        recSetList[0].recordSet[18].getLeafNodes()[0].textContent,
         "19.",
         "recSetList[1].recordSet[18].getLeafNodes()[0].textContent"
+    );
+});
+
+WUnit.test("extract", function(assert) {
+    var recSetList = Webdext.extract();
+    assert.strictEqual(recSetList.length, 4, "recSetList.length != 4");
+    assert.strictEqual(recSetList[0].size(), 20, "recSetList[0].size() != 20");
+    assert.strictEqual(
+        recSetList[0].recordSet[0].dataItems[0].dataContent,
+        "1.",
+        "recSetList[0].recordSet[0].dataItems[0].dataContent != 1."
+    );
+    assert.strictEqual(
+        recSetList[0].recordSet[0].dataItems[2].dataContent,
+        "Search for: -asia/-",
+        "recSetList[0].recordSet[0].dataItems[2].dataContent != Search for: -asia/-"
+    );
+    assert.strictEqual(
+        recSetList[0].recordSet[19].dataItems[0].dataContent,
+        "20.",
+        "recSetList[0].recordSet[19].dataItems[0].dataContent != 20."
+    );
+    assert.strictEqual(
+        recSetList[0].recordSet[19].dataItems[2].dataContent,
+        "American Lung Association Fact Sheet: Asian Americans and Pacific Islanders and",
+        "recSetList[0].recordSet[19].dataItems[2].dataContent != American Lung Association..."
     );
 });
 

@@ -274,5 +274,31 @@ WUnit.test("segmentCoarseGrainedRegion", function(assert) {
     ); 
 });
 
+WUnit.test("extract", function(assert) {
+    var recSetList = Webdext.extract();
+    assert.strictEqual(recSetList.length, 27, "recSetList.length != 27");
+    assert.strictEqual(recSetList[0].size(), 12, "recSetList[0].size() != 12");
+    assert.strictEqual(
+        recSetList[0].recordSet[0].dataItems[6].dataContent,
+        "Far and Wide: Bring That Horizon to Me!",
+        "recSetList[0].recordSet[0].dataItems[6].dataContent != Far and Wide: Bring That Horizon to Me!"
+    );
+    assert.strictEqual(
+        recSetList[0].recordSet[0].dataItems[14].dataContent,
+        "$19.72",
+        "recSetList[0].recordSet[0].dataItems[14].dataContent != $19.72"
+    );
+    assert.strictEqual(
+        recSetList[0].recordSet[11].dataItems[6].dataContent,
+        "Manual D Residential Duct Systems",
+        "recSetList[0].recordSet[11].dataItems[6].dataContent != Manual D Residential Duct Systems"
+    );
+    assert.strictEqual(
+        recSetList[0].recordSet[11].dataItems[14].dataContent,
+        "$58.19",
+        "recSetList[0].recordSet[11].dataItems[14].dataContent != $58.19"
+    );
+});
+
 // headBasedCRecMine === orderBasedCRecMine
 console.log("End Amazon test");

@@ -901,12 +901,12 @@
     }
 
     function recordComparator(r1, r2) {
-        var r1FirstNodeSiblingIndex = r1.wNodeSet[0].getSiblingIndex();
-        var r2FirstNodeSiblingIndex = r2.wNodeSet[0].getSiblingIndex();
+        var r1NodeIndex = r1.wNodeSet[0].nodeIndex;
+        var r2NodeIndex = r2.wNodeSet[0].nodeIndex;
 
-        if (r1FirstNodeSiblingIndex < r2FirstNodeSiblingIndex) {
+        if (r1NodeIndex < r2NodeIndex) {
             return -1;
-        } else if (r1FirstNodeSiblingIndex > r2FirstNodeSiblingIndex) {
+        } else if (r1NodeIndex > r2NodeIndex) {
             return 1;
         } else {
             return 0;
@@ -915,6 +915,19 @@
 
     function sortRecordSet(rs) {
         rs.recordSet.sort(recordComparator);
+    }
+
+    function recordSetComparator(rs1, rs2) {
+        var rs1Area = rs1.getArea();
+        var rs2Area = rs2.getArea();
+
+        if (rs1Area < rs2Area) {
+            return -1;
+        } else if (rs1Area > rs2Area) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     function extractDataRecords() {
@@ -928,7 +941,9 @@
             sortRecordSet(cRecSetList[i]);
         }
 
-        return mineRecFromCRec(cRecSetList);
+        var recSetList = mineRecFromCRec(cRecSetList);
+
+        return recSetList.sort(recordSetComparator).reverse();
     }
 
     function pairwiseTreeMatchingWeight(wTree1, wTree2) {
@@ -1054,6 +1069,26 @@
         }   
     }
 
+    function wNodeComparator(wNode1, wNode2) {
+        if (wNode1.nodeIndex < wNode2.nodeIndex) {
+            return -1;
+        } else if (wNode1.nodeIndex > wNode2.nodeIndex) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    function vertexComparator(vertex1, vertex2) {
+        if (vertex1.data[0].nodeIndex < vertex2.data[0].nodeIndex) {
+            return -1;
+        } else if (vertex1.data[0].nodeIndex > vertex2.data[0].nodeIndex) {
+            return 1;
+        } else {
+            return 0;
+        }   
+    }
+
     function multiTreeMatching(wTreeSet, recNum) {
         var wTreeSetLength = wTreeSet.length;
 
@@ -1172,6 +1207,11 @@
         }
 
         var numOfVertices = dag.numOfVertices();
+        for (var i=0; i < numOfVertices; i++) {
+            dag.vertices[i].data.sort(wNodeComparator);
+        }
+        dag.vertices.sort(vertexComparator);
+
         var dataItemSet = new Array(recNum);
         for (var i=0; i < recNum; i++) {
             dataItemSet[i] = [];
