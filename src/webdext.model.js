@@ -99,6 +99,20 @@
         );
     }
 
+    function mergeArrayUnique(array1, array2) {
+        var mergeArray = array1.concat([]);
+        var array2Length = array2.length;
+
+        for (var i=0; i < array2Length; i++) {
+            var element = array2[i];
+            if (mergeArray.indexOf(element) === -1) {
+                mergeArray.push(element);
+            }
+        }
+
+        return mergeArray;
+    }
+
     function Vertex(data) {
         if (data) {
             this.data = data;
@@ -183,7 +197,7 @@
         return isVertex1BeforeVertex2 || isVertex2BeforeVertex1;
     };
     DirectedAcyclicGraph.prototype.mergeVertices = function(vertex1, vertex2) {
-        var mergedData = vertex1.data.concat(vertex2.data);
+        var mergedData = mergeArrayUnique(vertex1.data, vertex2.data);
         var mergedVertex = new Vertex(mergedData);
         this.vertices.splice(this.vertices.indexOf(vertex1), 1);
         this.vertices.splice(this.vertices.indexOf(vertex2), 1);
@@ -201,9 +215,11 @@
         }
 
         var outboundVertices = outboundVertices1.concat(outboundVertices2);
-        this.outboundMap.delete(vertex1);
-        this.outboundMap.delete(vertex2);
-        this.outboundMap.set(mergedVertex, outboundVertices);
+        if (outboundVertices.length > 0) {
+            this.outboundMap.delete(vertex1);
+            this.outboundMap.delete(vertex2);
+            this.outboundMap.set(mergedVertex, outboundVertices);
+        }
 
         var valueIterator = this.outboundMap.values(),
             value = valueIterator.next();
@@ -223,6 +239,8 @@
             if (indexOfVertex1 > -1 || indexOfVertex2 > -1) {
                 value.value.push(mergedVertex);
             }
+
+            value = valueIterator.next();
         }
 
         return mergedVertex;

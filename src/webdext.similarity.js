@@ -139,8 +139,17 @@
     }
 
     function rectangleSizeSimilarity(rs1, rs2) {
-        var normalizedWidthDiff = Math.abs(rs1.width - rs2.width) / Math.max(rs1.width, rs2.width);
-        var normalizedHeightDiff = Math.abs(rs1.height - rs2.height) / Math.max(rs1.height, rs2.height);
+        var maxWidth = Math.max(rs1.width, rs2.width);
+        var normalizedWidthDiff = 0;
+        if (maxWidth !== 0) {
+            normalizedWidthDiff = Math.abs(rs1.width - rs2.width) / maxWidth;
+        }
+
+        var maxHeight = Math.max(rs1.height, rs2.height);
+        var normalizedHeightDiff = 0;
+        if (maxHeight !== 0) {
+            normalizedHeightDiff = Math.abs(rs1.height - rs2.height) / maxHeight;
+        }
 
         return 1 - ((normalizedWidthDiff + normalizedHeightDiff) / 2);
     }
@@ -618,35 +627,24 @@
         return clusters;
     }
 
-    function isVisuallyAligned(wNode1, wNode2) {
-        if (wNode1.tagName !== wNode2.tagName) {
-            return false;
-        }
-
-        var isSameLeftCoord = wNode1.coordinate.left === wNode2.coordinate.left;
-        var isSameTopCoord = wNode1.coordinate.top === wNode2.coordinate.top;
-
-        return isSameLeftCoord || isSameTopCoord;
-    }
-
-    // what if both nodes are leaf nodes without data? (separator)
-    // how about data type?
     function wNodeMatchWeight(wNode1, wNode2) {
-        var isWNode1Leaf = wNode1.isLeafNode(),
-            isWNode2Leaf = wNode2.isLeafNode();
-
-        if (isWNode1Leaf && isWNode2Leaf) {
+        if (wNode1.dataType && wNode2.dataType) {
             return wNodeSimilarity(wNode1, wNode2);
         }
-        else if (!isWNode1Leaf && !isWNode2Leaf) {
-            if (isVisuallyAligned(wNode1, wNode2)) {
+        else {
+            if (wNode1.tagName !== wNode2.tagName) {
+                return 0;
+            }
+
+            var isSameLeftCoord = wNode1.coordinate.left === wNode2.coordinate.left;
+            var isSameTopCoord = wNode1.coordinate.top === wNode2.coordinate.top;
+
+            if (isSameLeftCoord || isSameTopCoord) {
                 return MATCH_WEIGHTS.VISUALLY_ALIGNED;
             } else {
                 return MATCH_WEIGHTS.NOT_VISUALLY_ALIGNED;
             }
         }
-
-        return 0;
     }
 
     // exports

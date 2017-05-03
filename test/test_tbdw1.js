@@ -398,8 +398,8 @@ WUnit.test("segmentCoarseGrainedRegion", function(assert) {
     ); 
 });
 
-WUnit.test("extract", function(assert) {
-    var recSetList = Webdext.extract();
+WUnit.test("extractDataRecords", function(assert) {
+    var recSetList = Webdext.Extraction.extractDataRecords();
     assert.strictEqual(recSetList.length, 4, "recSetList.length != 4");
     assert.strictEqual(recSetList[1].size(), 20, "recSetList[1].size() != 20");
     assert.strictEqual(

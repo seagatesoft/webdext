@@ -30,6 +30,7 @@
 
     function Record(wNodeSet) {
         this.wNodeSet = wNodeSet;
+        this.dataItems = null;
     }
     Record.prototype.size = function() {
         return this.wNodeSet.length;
@@ -112,7 +113,6 @@
 
     function RecordSet(recSet) {
         this.recordSet = recSet;
-        this.dataItems = null;
     }
     RecordSet.prototype.size = function() {
         return this.recordSet.length;
@@ -917,50 +917,70 @@
         rs.recordSet.sort(recordComparator);
     }
 
-    function multiFeatureTreeMatching(wTree1, wTree2) {
-        if (Array.isArray(wTree1) && Array.isArray(wTree2)) {
-            var children1 = wTree1;
-            var children2 = wTree2;
-        } else {
-            if (wTree1.isLeafNode() && wTree2.isLeafNode()) {
-                var pairs = [
-                    {
-                        weight: wNodeMatchWeight(wTree1, wTree2),
-                        wNode1: wTree1,
-                        wNode2: wTree2
-                    }
-                ];
-                return {pairs: pairs, totalWeight: pairs[0].weight};
-            } else if (wTree1.tagName !== wTree2.tagName) {
-                var pairs = [
-                    {
-                        weight: 0,
-                        wNode1: wTree1,
-                        wNode2: wTree2
-                    }
-                ];
-                return {pairs: pairs, totalWeight: pairs[0].weight};
-            }
+    function extractDataRecords() {
+        var wTree = createWTree();
+        var bodyNode = evaluateXPath("/html/body")[0];
+        var wBodyNode = findWNode(bodyNode, wTree);
+        var cRecSetList = mineCRecFromTree(wBodyNode);
+        var cRecSetListLength = cRecSetList.length;
 
-            var children1 = wTree1.children;
-            var children2 = wTree2.children;
-            var totalWeight = wNodeMatchWeight(wTree1, wTree2);
+        for (var i=cRecSetListLength; i--; ) {
+            sortRecordSet(cRecSetList[i]);
         }
 
+        return mineRecFromCRec(cRecSetList);
+    }
+
+    function pairwiseTreeMatchingWeight(wTree1, wTree2) {
+        if (wTree1.isLeafNode() || wTree2.isLeafNode()) {
+            return wNodeMatchWeight(wTree1, wTree2);
+        } else if (wTree1.tagName !== wTree2.tagName) {
+            return 0;
+        }
+
+        var children1 = wTree1.children;
+        var children2 = wTree2.children;
+
+        var children1Length = children1.length,
+            children2Length = children2.length,
+            m = new Array(children1Length+1);
+
+        for (var i=0; i <= children1Length; i++) {
+            m[i] = new Array(children2Length+1);
+            m[i][0] = 0;
+        }
+
+        for (var j=1; j <= children2Length; j++) {
+            m[0][j] = 0;
+        }
+
+        for (var i=1; i <= children1Length; i++) {
+            for (var j=1; j <= children2Length; j++) {
+                var matchWeight = pairwiseTreeMatchingWeight(children1[i-1], children2[j-1]);
+                var alignment = m[i-1][j-1] + matchWeight;
+                m[i][j] = Math.max(alignment, m[i][j-1], m[i-1][j]);
+            }
+        }
+
+        return m[children1Length][children2Length] + wNodeMatchWeight(wTree1, wTree2);
+    }
+
+    function pairwiseTreeMatching(wNodeSet1, wNodeSet2) {
         var STEP = {
                 "Alignment": 0,
                 "Insertion": 1,
                 "Deletion": 2
             },
-            children1Length = children1.length,
-            children2Length = children2.length,
-            m = new Array(children1Length+1),
-            steps = new Array(children1Length+1);
+            wNodeSet1Length = wNodeSet1.length,
+            wNodeSet2Length = wNodeSet2.length,
+            m = new Array(wNodeSet1Length+1),
+            steps = new Array(wNodeSet1Length+1),
+            pairwiseMatchWeightMap = new Map();
         
-        for (var i=0; i <= children1Length; i++) {
-            m[i] = new Array(children2Length+1);
+        for (var i=0; i <= wNodeSet1Length; i++) {
+            m[i] = new Array(wNodeSet2Length+1);
             m[i][0] = 0;
-            steps[i] = new Array(children2Length+1);
+            steps[i] = new Array(wNodeSet2Length+1);
 
             if (i === 0) {
                 steps[i][0] = STEP.Alignment;
@@ -969,15 +989,22 @@
             }
         }
 
-        for (var j=1; j <= children2Length; j++) {
+        for (var j=1; j <= wNodeSet2Length; j++) {
             m[0][j] = 0;
             steps[0][j] = STEP.Insertion;
         }
 
-        for (i=1; i <= children1Length; i++) {
-            for (j=1; j <= children2Length; j++) {
-                var match = multiFeatureTreeMatching(children1[i-1], children2[j-1]);
-                var alignment = m[i-1][j-1] + match.totalWeight;
+        for (var i=1; i <= wNodeSet1Length; i++) {
+            for (var j=1; j <= wNodeSet2Length; j++) {
+                var matchWeight = pairwiseTreeMatchingWeight(wNodeSet1[i-1], wNodeSet2[j-1]);
+                var innerMap = pairwiseMatchWeightMap.get(wNodeSet1[i-1]);
+                if (!innerMap) {
+                    innerMap = new Map();
+                    pairwiseMatchWeightMap.set(wNodeSet1[i-1], innerMap);
+                }
+                innerMap.set(wNodeSet2[j-1], matchWeight);
+
+                var alignment = m[i-1][j-1] + matchWeight;
                 var insertion = m[i][j-1];
                 var deletion = m[i-1][j];
 
@@ -993,19 +1020,18 @@
             }
         }
 
-        i = children1Length;
-        j = children2Length;
-        var alignedPairs = [];
+        i = wNodeSet1Length;
+        j = wNodeSet2Length;
+        var matchedPairs = [];
 
         while(i > 0 || j > 0) {
             var step = steps[i][j];
             if (step === STEP.Alignment) {
-                alignedPairs.push({
-                    weight: m[i][j],
-                    wNode1: children1[i-1],
-                    wNode2: children2[i-1]
+                matchedPairs.push({
+                    weight: pairwiseMatchWeightMap.get(wNodeSet1[i-1]).get(wNodeSet2[j-1]),
+                    wNode1: wNodeSet1[i-1],
+                    wNode2: wNodeSet2[j-1]
                 });
-                totalWeight += m[i][j];
                 i--;
                 j--;
             } else if (step === STEP.Insertion) {
@@ -1015,7 +1041,7 @@
             }
         }
 
-        return {pairs: alignedPairs.reverse(), totalWeight: totalWeight};
+        return matchedPairs;
     }
 
     function matchComparator(match1, match2) {
@@ -1028,7 +1054,7 @@
         }   
     }
 
-    function dagMtm(wTreeSet, recNum) {
+    function multiTreeMatching(wTreeSet, recNum) {
         var wTreeSetLength = wTreeSet.length;
 
         if (wTreeSetLength === 0) {
@@ -1072,9 +1098,14 @@
 
             if (anyDataItemNode) {
                 var dataItems = new Array(recNum);
-                for (var i=0; i < recNum; i++) {
+                for (var i=0; i < wTreeSetLength; i++) {
                     var wNode = wNodeSet[i];
                     dataItems[wNode.rowNumber] = [wNode];
+                }
+                for (var i=0; i < recNum; i++) {
+                    if (typeof dataItems[i] === "undefined") {
+                        dataItems[i] = [null];
+                    }
                 }
 
                 return dataItems;
@@ -1082,17 +1113,18 @@
 
             for (var i=0; i < wTreeSetLength; i++) {
                 var wNode = wNodeSet[i];
-                childNodeSetList.push(wNode.children);
-                var childrenCount = wNode.childrenCount();
+                if (!wNode.isLeafNode()) {
+                    childNodeSetList.push(wNode.children);
+                    var childrenCount = wNode.getChildrenCount();
 
-                for (var j=childrenCount; j--; ) {
-                    wNode.children[j].rowNumber = wNode.rowNumber;
+                    for (var j=childrenCount; j--; ) {
+                        wNode.children[j].rowNumber = wNode.rowNumber;
+                    }
                 }
             }
         }
         
         var childNodeSetListLength = childNodeSetList.length,
-            vertices = [],
             dag = new DirectedAcyclicGraph();
 
         for (var i=0; i < childNodeSetListLength; i++) {
@@ -1113,9 +1145,9 @@
 
         var pairwiseAlignments = [];
         for (var i=0; i < childNodeSetListLength-1; i++) {
-            for (var j=i; i < childNodeSetListLength; i++) {
-                var match = multiFeatureTreeMatching(childNodeSetList[i], childNodeSetList[j]);
-                pairwiseAlignments.push.apply(pairwiseAlignments, match.pairs);                
+            for (var j=i+1; j < childNodeSetListLength; j++) {
+                var matchedPairs = pairwiseTreeMatching(childNodeSetList[i], childNodeSetList[j]);
+                pairwiseAlignments.push.apply(pairwiseAlignments, matchedPairs);                
             }
         }
         pairwiseAlignments.sort(matchComparator);
@@ -1133,16 +1165,20 @@
             for (var i=mergedVertexDataLength; i--; ) {
                 mergedVertex.data[i].vertex = mergedVertex;
             }
+
+            if (dag.numOfVertices() === 1) {
+                break;
+            }
         }
 
         var numOfVertices = dag.numOfVertices();
-        var dataItemSet = new Array[recNum];
+        var dataItemSet = new Array(recNum);
         for (var i=0; i < recNum; i++) {
             dataItemSet[i] = [];
         }
 
         for (var i=0; i < numOfVertices; i++) {
-            var dataItems = dagMtm(dag.vertices[i].data, recNum);
+            var dataItems = multiTreeMatching(dag.vertices[i].data, recNum);
             if (dataItems.length > 0) {
                 for (var j=0; j < recNum; j++) {
                     dataItemSet[j].push.apply(dataItemSet[j], dataItems[j]);
@@ -1155,7 +1191,7 @@
 
     function alignRecordSet(recSet) {
         var recNum = recSet.size();
-        var dataItemSet = dagMtm(recSet.recordSet, recNum);
+        var dataItemSet = multiTreeMatching(recSet.recordSet, recNum);
 
         for (var i=recNum; i--; ) {
             recSet.recordSet[i].dataItems = dataItemSet[i];
@@ -1165,30 +1201,21 @@
     }
 
     function extract() {
-        var wTree = createWTree();
-        var bodyNode = evaluateXPath("/html/body")[0];
-        var wBodyNode = findWNode(bodyNode, wTree);
-        var cRecSetList = mineCRecFromTree(wBodyNode);
-        var cRecSetListLength = cRecSetList.length;
+        var recSetList = extractDataRecords();
+        var recSetListLength = recSetList.length,
+            alignedRecSetList = [];
 
-        for (var i=cRecSetListLength; i--; ) {
-            sortRecordSet(cRecSetList[i]);
+        for (var i=0; i < recSetListLength; i++) {
+            try {
+                alignedRecSetList.push(alignRecordSet(recSetList[i]));
+            }
+            catch(error) {
+                console.log("Failed aligning data items on record set = "+i);
+                console.error(error);
+            }
         }
-
-        var recSetList = mineRecFromCRec(cRecSetList);
-
-        return recSetList;
-
-        // console.profile("Alignment");
-        // var recSetListLength = recSetList.length,
-        //     alignedRecSetList = [];
-
-        // for (i=0; i < recSetListLength; i++) {
-        //     alignedRecSetList.push(alignRecordSet(recSetList[i]));
-        // }
-        // console.profileEnd("Alignment");
         
-        // return alignedRecSetList;
+        return alignedRecSetList;
     }
 
     // exports
@@ -1218,8 +1245,14 @@
         aggregateSimilarCRecSets: aggregateSimilarCRecSets,
 
         mineRecFromCRec: mineRecFromCRec,
+        sortRecordSet: sortRecordSet,
+        extractDataRecords: extractDataRecords,
 
-        sortRecordSet: sortRecordSet
+        pairwiseTreeMatchingWeight: pairwiseTreeMatchingWeight,
+        pairwiseTreeMatching: pairwiseTreeMatching,
+        multiTreeMatching: multiTreeMatching,
+
+        alignRecordSet: alignRecordSet
     };
     Webdext.extract = extract;
 }).call(this);
