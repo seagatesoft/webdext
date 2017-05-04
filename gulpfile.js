@@ -1,25 +1,18 @@
 var gulp = require("gulp");
 var concat = require("gulp-concat");
 
-var jsFiles = [
+var chromeFiles = [
   "src/webdext.init.js",
   "src/webdext.sequal.js",
   "src/webdext.model.js",
   "src/webdext.similarity.js",
   "src/webdext.extraction.js",
-  "src/webdext.wrapper.js"
+  "src/webdext.chrome.js"
 ];
-
-gulp.task("build", [], function() {
-  console.log("Concatenating and moving JS files to build directory");
-  gulp.src(jsFiles)
-      .pipe(concat("webdext.js"))
-      .pipe(gulp.dest("build/"));
-});
 
 gulp.task("build-chrome", [], function() {
   console.log("Build as Chrome extension");
-  gulp.src(jsFiles)
+  gulp.src(chromeFiles)
       .pipe(concat("webdext.js"))
       .pipe(gulp.dest("build/"));
   gulp.src("chrome/*")

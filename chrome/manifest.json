@@ -3,11 +3,17 @@
   "name": "Webdext",
   "description": "Intelligent Web Data Extractor",
   "version": "0.0.1",
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["contentscript.js"]
-    }
+  "permissions": [
+    "http://*/*",
+    "https://*/*",
+    "activeTab",
+    "tabs"
   ],
-  "web_accessible_resources": ["webdext.js"]
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_title": "Webdext: Extract Data",
+    "default_popup": "popup.html"
+  }
 }
