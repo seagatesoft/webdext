@@ -90,10 +90,10 @@
             dataItems = [];
 
         for (var i=0; i < dataItemsLength; i++) {
-            var dataContent = this.dataItems[i].dataContent;
+            var dataNode = this.dataItems[i];
             dataItems.push({
-                xpath: this.dataItems[i].valueOf(),
-                value: dataContent === null ? "" : dataContent
+                xpath: dataNode === null ? null : dataNode.valueOf(),
+                value: dataNode === null ? "" : dataNode.dataContent
             });
         }
 
