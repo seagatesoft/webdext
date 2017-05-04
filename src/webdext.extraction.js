@@ -78,6 +78,30 @@
 
         return dataContents.join(", ");
     };
+    Record.prototype.toJSON = function() {
+        var wNodeSetLength = this.wNodeSet.length,
+            nodeXPaths = [];
+
+        for (var i=0; i < wNodeSetLength; i++) {
+            nodeXPaths.push(this.wNodeSet[i].valueOf());
+        }
+
+        var dataItemsLength = this.dataItems.length,
+            dataItems = [];
+
+        for (var i=0; i < dataItemsLength; i++) {
+            var dataContent = this.dataItems[i].dataContent;
+            dataItems.push({
+                xpath: this.dataItems[i].valueOf(),
+                value: dataContent === null ? "" : dataContent
+            });
+        }
+
+        return {
+            nodeXPaths: nodeXPaths,
+            dataItems: dataItems
+        };
+    };
     Record.prototype.getAverageSimilarity = function() {
         var sumSimilarity = 0,
             divisor = 0,
@@ -134,6 +158,16 @@
             min: Math.min.apply(null, siblingIndexes),
             max: Math.max.apply(null, siblingIndexes)
         };
+    };
+    RecordSet.prototype.toJSON = function() {
+        var recordSetLength = this.recordSet.length,
+            records = [];
+
+        for (var i=0; i < recordSetLength; i++) {
+            records.push(this.recordSet[i].toJSON());
+        }
+
+        return records;
     };
     RecordSet.prototype.getArea = function() {
         var sumArea = 0,
