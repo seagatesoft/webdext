@@ -91,10 +91,27 @@
 
         for (var i=0; i < dataItemsLength; i++) {
             var dataNode = this.dataItems[i];
-            dataItems.push({
-                xpath: dataNode === null ? null : dataNode.valueOf(),
-                value: dataNode === null ? "" : dataNode.dataContent
-            });
+            var dataType, dataItem;
+
+            if (dataNode === null) {
+                dataItem = {xpath: null, type: null, value: ""};
+            } else {
+                if (dataNode.dataType === DATA_TYPE.HYPERLINK) {
+                    dataType = "hyperlink";
+                } else if (dataNode.dataType === DATA_TYPE.IMAGE) {
+                    dataType = "image";
+                } else {
+                    dataType = "text";
+                }
+
+                dataItem = {
+                    xpath: dataNode.valueOf(),
+                    type: dataType,
+                    value: dataNode.dataContent
+                };
+            }
+
+            dataItems.push(dataItem);
         }
 
         return {

@@ -29,9 +29,21 @@ function createTable(recSet) {
 
         for (var j=0; j < nOfColumns; j++) {
             tbody.rows[i].insertCell(j+1);
-            tbody.rows[i].cells[j+1].appendChild(
-                document.createTextNode(recSet[i].dataItems[j].value)
-            );
+            var dataItem = recSet[i].dataItems[j];
+            var dataItemNode;
+
+            if (dataItem.type === "hyperlink") {
+                dataItemNode = document.createElement("a");
+                dataItemNode.href = dataItem.value;
+                dataItemNode.appendChild(document.createTextNode(dataItem.value));
+            } else if (dataItem.type === "image") {
+                dataItemNode = document.createElement("img");
+                dataItemNode.src = dataItem.value;
+            } else {
+                dataItemNode = document.createTextNode(dataItem.value);
+            }
+
+            tbody.rows[i].cells[j+1].appendChild(dataItemNode);
         }
     }
 
