@@ -1,4 +1,4 @@
-var recSetList = [];
+var data = null;
 
 function createTable(recSet) {
     var nOfRows = recSet.length;
@@ -55,22 +55,30 @@ function updateRecSetNumber(number) {
 }
 
 function displayRecSet() {
-    var recSetListLength = recSetList.length;
+    var recSetListLength = data.recSetList.length;
+
+    var textNode = document.createTextNode(`Found ${recSetListLength} data region(s) on `);
+    var hyperlinkNode = document.createElement("a");
+    hyperlinkNode.href = data.pageUrl;
+    hyperlinkNode.appendChild(document.createTextNode(data.pageUrl));
+    var recSetListInfoElement = document.getElementById("recSetListInfo");
+    recSetListInfoElement.appendChild(textNode);
+    recSetListInfoElement.appendChild(hyperlinkNode);
+
+    var extractionTime = data.extractionTime;
+    document.getElementById("extractionTimeInfo").innerText = `Extraction time: ${extractionTime} milliseconds`;
+
     document.getElementById("totalRecSet").innerText = recSetListLength;
     updateRecSetNumber(1);
-    createTable(recSetList[0]);
-}
-
-function showNoDataExtractedMessage() {
-    alert("Can't extract any data.");
+    createTable(data.recSetList[0]);
 }
 
 chrome.runtime.sendMessage({info: "resultPageLoaded"}, function(response) {
-    recSetList = response.recSetList;
+    data = response.data;
 
-    if (recSetList.length > 0) {
+    if (data.recSetList.length > 0) {
         displayRecSet();
     } else {
-        showNoDataExtractedMessage();
+        alert("Can't extract any data.");
     }
 });
