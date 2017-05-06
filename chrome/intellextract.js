@@ -2,6 +2,8 @@ var data = null;
 
 function createPageNumberList(numberOfPages, selectedPageNumber) {
     var select = document.createElement("select");
+    select.className = "form-control";
+
     for (var i=1; i <= numberOfPages; i++) {
         var option = document.createElement("option");
         option.value = i;
@@ -34,6 +36,7 @@ function createTable(recSet) {
     var nOfRows = recSet.length;
     var nOfColumns = recSet[0].dataItems.length;
     var table = document.createElement("table");
+    table.className = "table table-striped table-bordered table-hover table-condensed";
     var thead = table.createTHead();
     var th = document.createElement("th");
     th.appendChild(document.createTextNode("Row"));
@@ -48,6 +51,7 @@ function createTable(recSet) {
         var removeButton = document.createElement("button");
         removeButton.id = "removeButton_" + i;
         removeButton.value = i;
+        removeButton.className = "btn btn-warning";
         removeButton.appendChild(document.createTextNode("Remove"));
 
         var th = document.createElement("th");
@@ -64,7 +68,7 @@ function createTable(recSet) {
         tbody.insertRow(i);
         tbody.rows[i].insertCell(0);
         tbody.rows[i].cells[0].appendChild(document.createTextNode((i+1)+"."));
-        tbody.rows[i].cells[0].className = "alignRight";
+        tbody.rows[i].cells[0].className = "text-right";
 
         for (var j=0; j < nOfColumns; j++) {
             tbody.rows[i].insertCell(j+1);
@@ -90,30 +94,26 @@ function createTable(recSet) {
 }
 
 function displayRecSet(recSet) {
-    var nOfRows = recSet.length;
-    var nOfColumns = recSet[0].dataItems.length;
-
-    document.getElementById("rowsNumberInfo").innerText = `Number of rows: ${nOfRows}.`;
-    document.getElementById("columnsNumberInfo").innerText = `Number of columns: ${nOfColumns}.`;
+    document.getElementById("rowsNumber").innerText = recSet.length;
+    document.getElementById("columnsNumber").innerText = recSet[0].dataItems.length;
     createTable(recSet);
 }
 
 function displayRecSetList() {
     var recSetListLength = data.recSetList.length;
 
-    var textNode = document.createTextNode(`Found ${recSetListLength} data region(s) on `);
+    document.getElementById("recSetListLength").innerText = recSetListLength;
     var hyperlinkNode = document.createElement("a");
     hyperlinkNode.href = data.pageUrl;
     hyperlinkNode.appendChild(document.createTextNode(data.pageUrl));
-    var recSetListInfoElement = document.getElementById("recSetListInfo");
-    recSetListInfoElement.appendChild(textNode);
-    recSetListInfoElement.appendChild(hyperlinkNode);
+    hyperlinkNode.className = "alert-link";
+    document.getElementById("pageUrl").appendChild(hyperlinkNode);
 
-    var extractionTime = data.extractionTime;
-    document.getElementById("extractionTimeInfo").innerText = `Extraction time: ${extractionTime} milliseconds.`;
+    var extractionTime = Math.floor(data.extractionTime);
+    document.getElementById("extractionTime").innerText = addThreeDigitSeparator(extractionTime);
 
     var memoryUsage = data.memoryUsage;
-    document.getElementById("memoryUsageInfo").innerText = `Memory usage: ${memoryUsage} bytes.`;
+    document.getElementById("memoryUsage").innerText = addThreeDigitSeparator(memoryUsage);
 
     document.getElementById("totalRecSet").innerText = recSetListLength;
     var pageNumberList = createPageNumberList(recSetListLength, 1);

@@ -15,6 +15,6 @@ gulp.task("build-chrome", [], function() {
   gulp.src(chromeFiles)
       .pipe(concat("webdext.js"))
       .pipe(gulp.dest("build/"));
-  gulp.src("chrome/*")
+  gulp.src("chrome/**/*")
       .pipe(gulp.dest("build/"));
 });

@@ -1,16 +1,12 @@
-var initialMemory = window.performance.memory.usedJSHeapSize;
-var startTime = Date.now();
+var startTime = window.performance.now();
 var recSetList = Webdext.extract();
-var stopTime = Date.now();
-var currentMemory = window.performance.memory.usedJSHeapSize;
-var extractionTime = stopTime - startTime;
-var memoryUsage = currentMemory - initialMemory;
+var extractionTime = window.performance.now() - startTime;
 chrome.runtime.sendMessage({
     info: "dataExtracted",
     data: {
         pageUrl: location.href,
         recSetList: recSetList,
         extractionTime: extractionTime,
-        memoryUsage: memoryUsage
+        memoryUsage: window.performance.memory.usedJSHeapSize
     }
 });

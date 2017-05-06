@@ -2,43 +2,52 @@
 <html>
 <head>
 <title>Webdext - Intelligent Extraction Result</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <style type="text/css">
-table, th, td {
-    border-style: solid;
-    border-collapse: collapse;
+.form-control {
+    width:auto;
+    display:inline-block;
 }
-
-div {
-    margin: 10px;
-}
-
-.alignRight {
-    text-align: right;
-}
-
 </style>
+<script src="utils.js"></script>
 <script src="intellextract.js"></script>
 </head>
 
 <body>
+
+<div id="container" class="container">
+<div class="page-header">
 <h2>Webdext: Intelligent extraction result</h2>
+</div>
+<div id="recSetListInfo" class="alert alert-success">
+Found <mark id="recSetListLength"></mark> data region(s) on <span id="pageUrl"></span> 
+</div>
+<div id="extractionTimeInfo" class="alert alert-success">
+<strong>Extraction time</strong>: <mark id="extractionTime"></mark> milliseconds.
+</div>
+<div id="memoryUsageInfo" class="alert alert-success">
+<strong>Memory usage</strong>: <mark id="memoryUsage"></mark> bytes.
+</div>
 
-<div id="container">
-<div id="recSetListInfo"></div>
-<div id="extractionTimeInfo"></div>
-<div id="memoryUsageInfo"></div>
-
-<div id="recSetListPagination">
-<button>&lt;&lt;</button>
+<div id="recSetListPagination" class="panel panel-default">
+<div class="panel-body">
+<form class="form-inline">
+<button id="prevRecSetButton" class="btn btn-primary">&laquo;</button>
 <span>Data region <span id="recSetNumber"></span> of <span id="totalRecSet">0</span></span>
-<button>&gt;&gt;</button>
-<span id="rowsNumberInfo"></span>
-<span id="columnsNumberInfo"></span>
-<button id="saveDataButton">Save Data</button>
-<button id="saveExtractorButton">Save Extractor</button>
+<button id="nextRecSetButton" class="btn btn-primary">&raquo;</button>
+<span id="rowsNumberInfo"><span id="rowsNumber"></span> rows, </span>
+<span id="columnsNumberInfo"><span id="columnsNumber"></span> columns.</span>
+
+<div class="btn-group" role="group" aria-label="...">
+<button id="saveDataButton" class="btn btn-primary">Save Data</button>
+<button id="saveExtractorButton" class="btn btn-primary">Save Extractor</button>
+</div>
+</form>
+</div>
 </div>
 
 <div id="tableContainer"></div>
+
 </div>
 </body>
 </html>
