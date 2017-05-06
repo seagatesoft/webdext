@@ -112,6 +112,9 @@ function displayRecSetList() {
     var extractionTime = data.extractionTime;
     document.getElementById("extractionTimeInfo").innerText = `Extraction time: ${extractionTime} milliseconds.`;
 
+    var memoryUsage = data.memoryUsage;
+    document.getElementById("memoryUsageInfo").innerText = `Memory usage: ${memoryUsage} bytes.`;
+
     document.getElementById("totalRecSet").innerText = recSetListLength;
     var pageNumberList = createPageNumberList(recSetListLength, 1);
     document.getElementById("recSetNumber").appendChild(pageNumberList);
@@ -126,6 +129,7 @@ chrome.runtime.sendMessage({info: "resultPageLoaded"}, function(response) {
     } else {
         var container = document.getElementById("container");
         container.parentNode.removeChild(container);
+        document.body.appendChild(document.createTextNode("Can't extract any data."));
         alert("Can't extract any data.");
     }
 });
