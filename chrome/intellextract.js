@@ -124,6 +124,8 @@ chrome.runtime.sendMessage({info: "resultPageLoaded"}, function(response) {
     if (data.recSetList.length > 0) {
         displayRecSetList();
     } else {
+        var container = document.getElementById("container");
+        container.parentNode.removeChild(container);
         alert("Can't extract any data.");
     }
 });
