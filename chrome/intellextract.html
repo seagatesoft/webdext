@@ -3,10 +3,19 @@
 <head>
 <title>Webdext - Intelligent Extraction Result</title>
 <style type="text/css">
-    table, th, td {
-        border-style: solid;
-        border-collapse: collapse;
-    }
+table, th, td {
+    border-style: solid;
+    border-collapse: collapse;
+}
+
+div {
+    margin: 10px;
+}
+
+.alignRight {
+    text-align: right;
+}
+
 </style>
 <script src="intellextract.js"></script>
 </head>
@@ -15,10 +24,17 @@
 <div id="container">
 <div id="recSetListInfo"></div>
 <div id="extractionTimeInfo"></div>
-<p>Record Set <span id="recSetNumber">0</span> of <span id="totalRecSet">0</span></p>
-<button>&lt;&lt;Previous Record Set</button>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<button>Next Record Set&gt;&gt;</button>
+
+<div id="recSetListPagination">
+<button>&lt;&lt;</button>
+<span>Data region <span id="recSetNumber"></span> of <span id="totalRecSet">0</span></span>
+<button>&gt;&gt;</button>
+<span id="rowsNumberInfo"></span>
+<span id="columnsNumberInfo"></span>
+<button id="saveDataButton">Save Data</button>
+<button id="saveExtractorButton">Save Extractor</button>
+</div>
+
 <div id="tableContainer"></div>
 </div>
 </body>
