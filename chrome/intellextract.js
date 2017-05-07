@@ -1,7 +1,8 @@
-var data = null;
+var data, currentPage;
 
 function createPageNumberList(numberOfPages, selectedPageNumber) {
     var select = document.createElement("select");
+    select.id = "pageNumberList";
     select.className = "form-control";
 
     for (var i=1; i <= numberOfPages; i++) {
@@ -16,10 +17,13 @@ function createPageNumberList(numberOfPages, selectedPageNumber) {
         select.appendChild(option);
     }
 
+    select.addEventListener("change", pageNumberChangedCallback);
+
     return select;
 }
 
-function updateSelectedPageNumber(pageNumberListEl, selectedPageNumber) {
+function updateSelectedPageNumber(selectedPageNumber) {
+    var pageNumberListEl = document.getElementById("pageNumberList");
     var options = pageNumberListEl.getElementsByTagName("option"),
         numberOfOptions = options.length;
 
@@ -36,6 +40,7 @@ function createTable(recSet) {
     var nOfRows = recSet.length;
     var nOfColumns = recSet[0].dataItems.length;
     var table = document.createElement("table");
+    table.id = "recSetTable";
     table.className = "table table-striped table-bordered table-hover table-condensed";
     var thead = table.createTHead();
     var th = document.createElement("th");
@@ -90,13 +95,20 @@ function createTable(recSet) {
         }
     }
 
-    document.getElementById("tableContainer").appendChild(table);
+    return table;;
 }
 
 function displayRecSet(recSet) {
     document.getElementById("rowsNumber").innerText = recSet.length;
     document.getElementById("columnsNumber").innerText = recSet[0].dataItems.length;
-    createTable(recSet);
+
+    var existingTable = document.getElementById("recSetTable");
+
+    if (existingTable) {
+        existingTable.parentNode.removeChild(existingTable);
+    }
+
+    document.getElementById("tableContainer").appendChild(createTable(recSet));
 }
 
 function displayRecSetList() {
@@ -115,10 +127,45 @@ function displayRecSetList() {
     var memoryUsage = data.memoryUsage;
     document.getElementById("memoryUsage").innerText = addThreeDigitSeparator(memoryUsage);
 
+    currentPage = 1;
     document.getElementById("totalRecSet").innerText = recSetListLength;
-    var pageNumberList = createPageNumberList(recSetListLength, 1);
+    var pageNumberList = createPageNumberList(recSetListLength, currentPage);
     document.getElementById("recSetNumber").appendChild(pageNumberList);
     displayRecSet(data.recSetList[0]);
+
+    var prevPageButton = document.getElementById("prevRecSetButton");
+    prevPageButton.disabled = true;
+    var nextPageButton = document.getElementById("nextRecSetButton");
+    if (recSetListLength === 1) {
+        nextPageButton.disabled = true;
+    }
+}
+
+function displayRecSetNumber() {
+    var recSet = data.recSetList[currentPage-1];
+    displayRecSet(recSet);
+    updateSelectedPageNumber(currentPage);
+}
+
+function pageNumberChangedCallback() {
+    var selectedPage = document.getElementById("pageNumberList").value;
+    currentPage = parseInt(selectedPage);
+    displayRecSetNumber();
+
+    var prevPageButton = document.getElementById("prevRecSetButton");
+    var nextPageButton = document.getElementById("nextRecSetButton");
+
+    if (currentPage === 1) {
+        prevPageButton.disabled = true;
+    } else {
+        prevPageButton.disabled = false;
+    }
+
+    if (currentPage === data.recSetList.length) {
+        nextPageButton.disabled = true;
+    } else {
+        nextPageButton.disabled = false;
+    }
 }
 
 chrome.runtime.sendMessage({info: "resultPageLoaded"}, function(response) {
@@ -132,4 +179,38 @@ chrome.runtime.sendMessage({info: "resultPageLoaded"}, function(response) {
         document.body.appendChild(document.createTextNode("Can't extract any data."));
         alert("Can't extract any data.");
     }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("prevRecSetButton").addEventListener("click", function() {
+        if (currentPage > 1) {
+            currentPage--;
+            displayRecSetNumber();
+
+            if (currentPage === 1) {
+                document.getElementById("prevRecSetButton").disabled = true;
+            }
+
+            var nextPageButton = document.getElementById("nextRecSetButton");
+            if (nextPageButton.disabled) {
+                nextPageButton.disabled = false;
+            }
+        }
+    });
+
+    document.getElementById("nextRecSetButton").addEventListener("click", function() {
+        if (currentPage < data.recSetList.length) {
+            currentPage++;
+            displayRecSetNumber();
+
+            if (currentPage === data.recSetList.length) {
+                document.getElementById("nextRecSetButton").disabled = true;
+            }
+
+            var prevPageButton = document.getElementById("prevRecSetButton");
+            if (prevPageButton.disabled) {
+                prevPageButton.disabled = false;
+            }
+        }
+    });
 });
