@@ -49,6 +49,10 @@ function createTable(recSet) {
     thead.rows[0].appendChild(th);
 
     for (var i=1; i <= nOfColumns; i++) {
+        if (recSet.deletedColumns && recSet.deletedColumns.indexOf(i-1) > -1) {
+            continue;
+        }
+
         var input = document.createElement("input");
         input.type = "text";
         input.value = "Column " + i;
@@ -57,9 +61,11 @@ function createTable(recSet) {
         removeButton.id = "removeButton_" + i;
         removeButton.value = i;
         removeButton.className = "btn btn-warning";
+        removeButton.addEventListener("click", removeColumnCallback);
         removeButton.appendChild(document.createTextNode("Remove"));
 
         var th = document.createElement("th");
+        th.className = "column_" + i;
         th.appendChild(input);
         th.appendChild(document.createElement("p"));
         th.appendChild(removeButton);
@@ -75,8 +81,17 @@ function createTable(recSet) {
         tbody.rows[i].cells[0].appendChild(document.createTextNode((i+1)+"."));
         tbody.rows[i].cells[0].className = "text-right";
 
+        var columnNumber = 0;
+
         for (var j=0; j < nOfColumns; j++) {
-            tbody.rows[i].insertCell(j+1);
+            columnNumber++;
+
+            if (recSet.deletedColumns && recSet.deletedColumns.indexOf(j) > -1) {
+                continue;
+            }
+
+            tbody.rows[i].insertCell(columnNumber);
+            tbody.rows[i].cells[columnNumber].className = "column_" + (j+1);
             var dataItem = recSet[i].dataItems[j];
             var dataItemNode;
 
@@ -91,7 +106,7 @@ function createTable(recSet) {
                 dataItemNode = document.createTextNode(dataItem.value);
             }
 
-            tbody.rows[i].cells[j+1].appendChild(dataItemNode);
+            tbody.rows[i].cells[columnNumber].appendChild(dataItemNode);
         }
     }
 
@@ -165,6 +180,30 @@ function pageNumberChangedCallback() {
         nextPageButton.disabled = true;
     } else {
         nextPageButton.disabled = false;
+    }
+}
+
+function removeColumnCallback(event) {
+    if (!confirm("Are you sure to remove this column?")) {
+        return;
+    }
+
+    var columnNumber = parseInt(event.target.value);
+    var recSet = data.recSetList[currentPage-1];
+
+    if (recSet.deletedColumns) {
+        if (recSet.deletedColumns.indexOf(columnNumber) === -1) {
+            recSet.deletedColumns.push(columnNumber-1);
+        }
+    } else {
+        recSet.deletedColumns = [columnNumber-1];
+    }
+
+    var cellsToRemove = document.getElementsByClassName("column_"+columnNumber);
+    var nOfCells = cellsToRemove.length;
+
+    for (var i=nOfCells; i--; ) {
+        cellsToRemove[i].parentNode.removeChild(cellsToRemove[i]);
     }
 }
 
