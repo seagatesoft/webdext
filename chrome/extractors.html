@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<title>Webdext - List of Existing Extractors</title>
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<script src="extractors.js"></script>
+</head>
+
+<body>
+
+<div id="container" class="container">
+<div class="page-header">
+<h2>Webdext: List of Existing Extractors</h2>
+</div>
+
+<div>
+<button id="createExtractor" class="btn btn-primary" value="hidden">Create Manually</button>
+<div id="createExtractorArea" class="hidden">
+    <input type="text" class="form-control" id="extractorName" placeholder="Extractor name">
+    <textarea id="extractorTextarea" class="form-control" cols="100" rows="20" placeholder="Extractor (JSON format)"></textarea>
+    <button id="saveExtractor" class="btn btn-primary">Save</button>
+    <button id="cancelCreateExtractor" class="btn btn-warning">Cancel</button>
+</div>
+</div>
+
+<div id="tableArea">
+    
+</div>
+</div>
+</body>
+</html>

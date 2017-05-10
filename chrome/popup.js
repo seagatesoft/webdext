@@ -9,4 +9,8 @@ document.addEventListener("DOMContentLoaded", function() {
             button.innerText = "Intelligent Extract";
         });
     });
+
+    document.getElementById("listOfExtractorsButton").addEventListener("click", function(event) {
+        chrome.tabs.create({url:chrome.extension.getURL("extractors.html")});
+    });
 });
