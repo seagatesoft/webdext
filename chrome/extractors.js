@@ -56,11 +56,13 @@ function createTable(data) {
 }
 
 function deleteExtractor(event) {
-    var key = event.target.value;
-    chrome.storage.local.remove(key, function () {
-        alert(key + " deleted.");
-    });
-    showListOfExtractors();
+    if (confirm("Are you sure?")) {
+        var key = event.target.value;
+        chrome.storage.local.remove(key, function () {
+            alert(key + " deleted.");
+        });
+        showListOfExtractors();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
