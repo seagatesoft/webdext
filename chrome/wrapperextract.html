@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<title>Webdext - Extraction Result</title>
+<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+<style type="text/css">
+.form-control {
+    width:auto;
+    display:inline-block;
+}
+</style>
+<script src="utils.js"></script>
+<script src="wrapperextract.js"></script>
+</head>
+
+<body>
+
+<div id="container" class="container">
+<div class="page-header">
+<h2>Webdext: extraction result</h2>
+</div>
+<div id="pageUrlInfo" class="alert alert-success">
+<strong>URL</strong>: <span id="pageUrl"></span>.
+</div>
+<div id="extractionTimeInfo" class="alert alert-success">
+<strong>Extraction time</strong>: <mark id="extractionTime"></mark> milliseconds.
+</div>
+<div id="memoryUsageInfo" class="alert alert-success">
+<strong>Memory usage</strong>: <mark id="memoryUsage"></mark> bytes.
+</div>
+
+<div class="panel panel-default">
+<div class="panel-body">
+<span id="rowsNumberInfo"><span id="rowsNumber"></span> rows, </span>
+<span id="columnsNumberInfo"><span id="columnsNumber"></span> columns.</span>
+
+<div class="btn-group" role="group" aria-label="...">
+<button id="saveDataButton" class="btn btn-primary">Save Data</button>
+</div>
+</div>
+</div>
+
+<div id="tableContainer"></div>
+
+</div>
+</body>
+</html>

@@ -22,7 +22,18 @@
                 var dataItem = evaluateXPath(dataItemXPath, dataRecordElement);
 
                 if (dataItem.length > 0) {
-                    dataRecord[dataItemName] = dataItem[0];
+                    var dataContent = dataItem[0].nodeValue,
+                        dataType;
+
+                    if (dataItem[0].nodeType === Node.TEXT_NODE) {
+                        dataType = "text";
+                    } else if (dataItem[0].nodeName.toLowerCase() === "href") {
+                        dataType = "hyperlink";
+                    } else if (dataItem[0].nodeName.toLowerCase() === "src") {
+                        dataType = "image";
+                    }
+
+                    dataRecord[dataItemName] = {type: dataType, content: dataContent};
                 } else {
                     dataRecord[dataItemName] = "";
                 }

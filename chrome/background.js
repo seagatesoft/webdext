@@ -1,10 +1,15 @@
-var data = null;
+var intellExtractData, wrapperExtractData;
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
-    if (message.info === "dataExtracted") {
-        data = message.data;
+    if (message.info === "dataExtractedByIntell") {
+        intellExtractData = message.data;
         chrome.tabs.create({url:chrome.extension.getURL("intellextract.html")});
-    } else if (message.info === "resultPageLoaded") {
-        sendResponse({data: data});
+    } else if (message.info === "dataExtractedByWrapper") {
+        wrapperExtractData = message.data;
+        chrome.tabs.create({url:chrome.extension.getURL("wrapperextract.html")});
+    } else if (message.info === "intellExtractPageLoaded") {
+        sendResponse({data: intellExtractData});
+    } else if (message.info === "wrapperExtractPageLoaded") {
+        sendResponse({data: wrapperExtractData});
     }
 });

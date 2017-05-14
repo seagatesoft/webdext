@@ -110,7 +110,7 @@ function createTable(recSet) {
         }
     }
 
-    return table;;
+    return table;
 }
 
 function displayRecSet(recSet) {
@@ -207,7 +207,7 @@ function removeColumnCallback(event) {
     }
 }
 
-chrome.runtime.sendMessage({info: "resultPageLoaded"}, function(response) {
+chrome.runtime.sendMessage({info: "intellExtractPageLoaded"}, function(response) {
     data = response.data;
 
     if (data.recSetList.length > 0) {

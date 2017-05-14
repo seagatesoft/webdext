@@ -1,3 +1,15 @@
+function wrapperExtract(event) {
+    var key = event.target.value;
+    chrome.storage.local.get(key, function(data) {
+        var wrapperData = JSON.parse(data[key]);
+        chrome.tabs.executeScript(null, {file: "webdext-wrapperextract.js"}, function() {
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {wrapperData: wrapperData});
+            });
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("intelligentExtractButton").addEventListener("click", function() {
         var buttons = document.getElementsByClassName("menuButton");
@@ -8,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
             buttons[i].innerText = "Please wait";
         }
 
-        chrome.tabs.executeScript(null, {file: "webdext.js"});
+        chrome.tabs.executeScript(null, {file: "webdext-intellextract.js"});
     });
 
     document.getElementById("useExistingExtractorButton").addEventListener("click", function() {
@@ -26,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     extractorElement.appendChild(labelElement);
                     var buttonElement = document.createElement("button");
                     buttonElement.value = key;
+                    buttonElement.addEventListener("click", wrapperExtract);
                     buttonElement.appendChild(document.createTextNode("Extract"));
                     extractorElement.appendChild(buttonElement);
                     extractorListElement.appendChild(extractorElement);
