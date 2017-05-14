@@ -15,7 +15,8 @@ function createTable(dataRecords) {
 
     for (var i=1; i <= nOfColumns; i++) {
         var th = document.createElement("th");
-        thead.rows[0].appendChild(document.createTextNode(fields[0]));
+        th.appendChild(document.createTextNode(fields[i-1]));
+        thead.rows[0].appendChild(th);
     }
 
     var tbody = document.createElement("tbody");
@@ -33,7 +34,6 @@ function createTable(dataRecords) {
             columnNumber++;
             tbody.rows[i].insertCell(columnNumber);
             var dataItem = dataRecords[i][fields[j]].content;
-            console.log(dataRecords[i]);
             var dataItemNode = document.createTextNode(dataItem);
             tbody.rows[i].cells[columnNumber].appendChild(dataItemNode);
         }
