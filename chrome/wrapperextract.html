@@ -9,6 +9,8 @@
     display:inline-block;
 }
 </style>
+<script src="jquery-3.2.1.min.js"></script>
+<script src="bootstrap.min.js"></script>
 <script src="utils.js"></script>
 <script src="wrapperextract.js"></script>
 </head>
@@ -34,8 +36,12 @@
 <span id="rowsNumberInfo"><span id="rowsNumber"></span> rows, </span>
 <span id="columnsNumberInfo"><span id="columnsNumber"></span> columns.</span>
 
-<div class="btn-group" role="group" aria-label="...">
-<button id="saveDataButton" class="btn btn-primary">Save Data</button>
+<div class="btn-group">
+<button id="copyDataButton" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Copy Data to Clipboard <span class="caret"></span></button>
+<ul class="dropdown-menu">
+    <li><a href="#">as CSV</a></li>
+    <li><a href="#">as JSON</a></li>
+  </ul>
 </div>
 </div>
 </div>
