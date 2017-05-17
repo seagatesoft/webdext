@@ -33,8 +33,19 @@ function createTable(dataRecords) {
         for (var j=0; j < nOfColumns; j++) {
             columnNumber++;
             tbody.rows[i].insertCell(columnNumber);
-            var dataItem = dataRecords[i][fields[j]].content;
-            var dataItemNode = document.createTextNode(dataItem);
+            var dataItem = dataRecords[i][fields[j]];
+            var dataItemNode;
+
+            if (dataItem.type === "hyperlink") {
+                dataItemNode = document.createElement("a");
+                dataItemNode.href = dataItem.value;
+                dataItemNode.appendChild(document.createTextNode(dataItem.value));
+            } else if (dataItem.type === "image") {
+                dataItemNode = document.createElement("img");
+                dataItemNode.src = dataItem.value;
+            } else if (dataItem.type === "text") {
+                dataItemNode = document.createTextNode(dataItem.value);
+            }
             tbody.rows[i].cells[columnNumber].appendChild(dataItemNode);
         }
     }

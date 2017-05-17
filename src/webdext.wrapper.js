@@ -22,7 +22,7 @@
                 var dataItem = evaluateXPath(dataItemXPath, dataRecordElement);
 
                 if (dataItem.length > 0) {
-                    var dataContent = dataItem[0].nodeValue,
+                    var dataValue = dataItem[0].nodeValue,
                         dataType;
 
                     if (dataItem[0].nodeType === Node.TEXT_NODE) {
@@ -33,9 +33,9 @@
                         dataType = "image";
                     }
 
-                    dataRecord[dataItemName] = {type: dataType, content: dataContent};
+                    dataRecord[dataItemName] = {type: dataType, value: dataValue};
                 } else {
-                    dataRecord[dataItemName] = "";
+                    dataRecord[dataItemName] = {type: "text", value: ""};
                 }
             }
             dataRecords.push(dataRecord);
