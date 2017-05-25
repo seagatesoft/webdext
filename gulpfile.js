@@ -4,6 +4,7 @@ var concat = require("gulp-concat");
 var intellExtractFiles = [
   "src/webdext.init.js",
   "src/webdext.xpath.js",
+  "src/webdext.sequal.js",
   "src/webdext.model.js",
   "src/webdext.similarity.js",
   "src/webdext.extraction.js",
