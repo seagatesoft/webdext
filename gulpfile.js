@@ -3,7 +3,7 @@ var concat = require("gulp-concat");
 
 var intellExtractFiles = [
   "src/webdext.init.js",
-  "src/webdext.sequal.js",
+  "src/webdext.xpath.js",
   "src/webdext.model.js",
   "src/webdext.similarity.js",
   "src/webdext.extraction.js",
@@ -14,6 +14,13 @@ var wrapperExtractFiles = [
   "src/webdext.wrapper.js",
   "src/webdext.chrome.wrapperextract.js"
 ];
+var inductWrapperFiles = [
+  "src/webdext.init.js",
+  "src/webdext.xpath.js",
+  "src/webdext.sequal.js",
+  "src/webdext.induction.js",
+  "src/webdext.chrome.inductwrapper.js"
+];
 
 gulp.task("build-chrome", [], function() {
   console.log("Build as Chrome extension");
@@ -22,6 +29,9 @@ gulp.task("build-chrome", [], function() {
       .pipe(gulp.dest("build/"));
   gulp.src(wrapperExtractFiles)
       .pipe(concat("webdext-wrapperextract.js"))
+      .pipe(gulp.dest("build/"));
+  gulp.src(inductWrapperFiles)
+      .pipe(concat("webdext-inductwrapper.js"))
       .pipe(gulp.dest("build/"));
   gulp.src("chrome/**/*")
       .pipe(gulp.dest("build/"));

@@ -76,102 +76,6 @@ QUnit.test("parseUrl", function(assert) {
     assert.strictEqual(Webdext.Model.normVector(tfv2), Math.sqrt(8));
 });
 
-QUnit.module("XPath");
-QUnit.test("XPathStep", function(assert) {
-    var step = new Webdext.Model.XPathStep({"abbreviation": "."});
-    assert.strictEqual(step.toString(), ".");
-
-    step = new Webdext.Model.XPathStep({"nodetest": "a"});
-    assert.strictEqual(step.toString(), "a");
-
-    step = new Webdext.Model.XPathStep({"nodetest": "text()"});
-    assert.strictEqual(step.toString(), "text()");
-
-    step = new Webdext.Model.XPathStep({"nodetest": "@href"});
-    assert.strictEqual(step.toString(), "@href");
-
-    step = new Webdext.Model.XPathStep({"nodetest": "a", "axis": "self"});
-    assert.strictEqual(step.toString(), "self::a");
-
-    step = new Webdext.Model.XPathStep({
-        "nodetest": "a",
-        "axis": "self",
-        "predicates": ["1", "contains(@href, 'amazon.com')"],
-    });
-    assert.strictEqual(step.toString(), "self::a[1][contains(@href, 'amazon.com')]");
-});
-QUnit.test("LocationXPath", function(assert) {
-    var steps = [];
-    steps.push(new Webdext.Model.XPathStep({"nodetest": "html"}));
-    steps.push(new Webdext.Model.XPathStep({"nodetest": "head"}));
-    steps.push(new Webdext.Model.XPathStep({"nodetest": "title"}));
-    steps.push(new Webdext.Model.XPathStep({"nodetest": "text()", "predicates": [1]}));
-
-    var locXPath = new Webdext.Model.LocationXPath(steps);
-    assert.strictEqual(locXPath.toString(), "/html/head/title/text()[1]");
-
-    locXPath = new Webdext.Model.LocationXPath(steps, true);
-    assert.strictEqual(locXPath.toString(), "/html/head/title/text()[1]");
-
-    locXPath = new Webdext.Model.LocationXPath(steps, false);
-    assert.strictEqual(locXPath.toString(), "./html/head/title/text()[1]");
-});
-QUnit.test("IndexedXPathStep", function(assert) {
-    var step = new Webdext.Model.IndexedXPathStep("div", 1);
-    assert.strictEqual(step.toString(), "div[1]");
-    assert.strictEqual(step.position, 1);
-
-    step = new Webdext.Model.IndexedXPathStep("text()", 2);
-    assert.strictEqual(step.toString(), "text()[2]");
-    assert.strictEqual(step.position, 2);
-});
-QUnit.test("IndexedXPath", function(assert) {
-    var steps = [];
-    steps.push(new Webdext.Model.IndexedXPathStep("html", 1));
-    steps.push(new Webdext.Model.IndexedXPathStep("head", 1));
-    steps.push(new Webdext.Model.IndexedXPathStep("title", 1));
-    steps.push(new Webdext.Model.IndexedXPathStep("text()", 1));
-
-    var locXPath = new Webdext.Model.LocationXPath(steps);
-    assert.strictEqual(locXPath.toString(), "/html[1]/head[1]/title[1]/text()[1]");
-
-    locXPath = new Webdext.Model.LocationXPath(steps, true);
-    assert.strictEqual(locXPath.toString(), "/html[1]/head[1]/title[1]/text()[1]");
-
-    locXPath = new Webdext.Model.LocationXPath(steps, false);
-    assert.strictEqual(locXPath.toString(), "./html[1]/head[1]/title[1]/text()[1]");
-});
-QUnit.test("getIndexedXPathStepText", function(assert) {
-    var node = document.getElementById("textNodeElement").childNodes[0];
-    var ixs = Webdext.Model.getIndexedXPathStep(node);
-    assert.strictEqual(ixs.toString(), "text()[1]"); 
-});
-QUnit.test("getIndexedXPathStepHyperlink", function(assert) {
-    var node = document.getElementById("hyperlinkElement");
-    var ixs = Webdext.Model.getIndexedXPathStep(node);
-    assert.strictEqual(ixs.toString(), "a[1]"); 
-});
-QUnit.test("getIndexedXPathStepImage", function(assert) {
-    var node = document.getElementById("imageElement");
-    var ixs = Webdext.Model.getIndexedXPathStep(node);
-    assert.strictEqual(ixs.toString(), "img[1]"); 
-});
-QUnit.test("getIndexedXPathText", function(assert) {
-    var node = document.getElementById("textNodeElement").childNodes[0];
-    var ix = Webdext.Model.getIndexedXPath(node);
-    assert.strictEqual(ix.toString(), "/html[1]/body[1]/div[2]/div[1]/span[1]/text()[1]"); 
-});
-QUnit.test("getIndexedXPathHyperlink", function(assert) {
-    var node = document.getElementById("hyperlinkElement");
-    var ix = Webdext.Model.getIndexedXPath(node);
-    assert.strictEqual(ix.toString(), "/html[1]/body[1]/div[2]/div[1]/a[1]"); 
-});
-QUnit.test("getIndexedXPathImage", function(assert) {
-    var node = document.getElementById("imageElement");
-    var ix = Webdext.Model.getIndexedXPath(node);
-    assert.strictEqual(ix.toString(), "/html[1]/body[1]/div[2]/div[1]/img[1]"); 
-});
-
 QUnit.module("TagPathStep");
 QUnit.test("TagPathStep", function(assert) {
     var tpStep = new Webdext.Model.TagPathStep("SPAN", "C");
@@ -301,33 +205,6 @@ QUnit.test("addChild", function(assert) {
     wte.addChild(wt);
     assert.strictEqual(wte.getChildrenCount(), 1);
     assert.deepEqual(wte.children, [wt]);
-});
-
-QUnit.module("createWNode");
-QUnit.test("createWNodeElement", function(assert) {
-    var node = document.getElementById("main");
-    var wNode = Webdext.Model.createWNode(node);
-    var expected = new Webdext.Model.WElementNode(node);
-    assert.deepEqual(wNode, expected);
-});
-QUnit.test("createWNodeText", function(assert) {
-    var node = document.getElementById("textNodeElement").childNodes[0];
-    var wNode = Webdext.Model.createWNode(node);
-    var expected = new Webdext.Model.WTextNode(node);
-    assert.deepEqual(wNode, expected); 
-});
-QUnit.test("createWNodeHyperlink", function(assert) {
-    var node = document.getElementById("hyperlinkElement");
-    var wNode = Webdext.Model.createWNode(node);
-    var pNode = new Webdext.Model.WElementNode(node);
-    var cNode = new Webdext.Model.WHyperlinkNode(node, pNode);
-    assert.deepEqual(wNode, pNode); 
-});
-QUnit.test("createWNodeImage", function(assert) {
-    var node = document.getElementById("imageElement");
-    var wNode = Webdext.Model.createWNode(node);
-    var expected = new Webdext.Model.WImageNode(node);
-    assert.deepEqual(wNode, expected); 
 });
 
 QUnit.module("createWTree");
