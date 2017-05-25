@@ -195,6 +195,23 @@
         return new IndexedXPath(steps.reverse());
     }
 
+    function parseIndexedXPath(str) {
+        var splitted = str.split("/");
+        var absolute = splitted[0] === "";
+        splitted.shift();
+        var stepPattern = /([0-9a-zA-Z@()]+)\[(\d+)\]/;
+        var nOfSteps = splitted.length;
+        var indexedXPathSteps = [];
+
+        for (var i=0; i < nOfSteps; i++) {
+            var matches = stepPattern.exec(splitted[i]);
+            var step = new IndexedXPathStep(matches[1], parseInt(matches[2]));
+            indexedXPathSteps.push(step);
+        }
+
+        return new IndexedXPath(indexedXPathSteps, absolute);
+    }
+
     // exports
     Webdext.XPath = {
         XPathStep: XPathStep,
@@ -202,6 +219,7 @@
         IndexedXPathStep: IndexedXPathStep,
         IndexedXPath: IndexedXPath,
         getIndexedXPathStep: getIndexedXPathStep,
-        getIndexedXPath: getIndexedXPath
+        getIndexedXPath: getIndexedXPath,
+        parseIndexedXPath: parseIndexedXPath
     };
 }).call(this);

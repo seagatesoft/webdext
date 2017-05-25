@@ -608,7 +608,7 @@
         }
     );
     WHyperlinkNode.prototype.valueOf = function() {
-        return this.indexedXPath.toString() + "/@href";
+        return this.indexedXPath.toString() + "/@href[1]";
     };
     WHyperlinkNode.prototype.isLeafNode = function() {
         return true;

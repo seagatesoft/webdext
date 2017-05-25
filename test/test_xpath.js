@@ -93,3 +93,48 @@ QUnit.test("getIndexedXPathImage", function(assert) {
     var ix = Webdext.XPath.getIndexedXPath(node);
     assert.strictEqual(ix.toString(), "/html[1]/body[1]/div[2]/div[1]/img[1]"); 
 });
+QUnit.test("parseIndexedXPathAbsolute", function(assert) {
+    var steps = [
+        new Webdext.XPath.IndexedXPathStep("html", 1),
+        new Webdext.XPath.IndexedXPathStep("body", 1),
+        new Webdext.XPath.IndexedXPathStep("div", 2),
+        new Webdext.XPath.IndexedXPathStep("ul", 1),
+        new Webdext.XPath.IndexedXPathStep("li", 1)
+    ];
+    assert.deepEqual(
+        Webdext.XPath.parseIndexedXPath("/html[1]/body[1]/div[2]/ul[1]/li[1]"),
+        new Webdext.XPath.IndexedXPath(steps)
+    ); 
+});
+QUnit.test("parseIndexedXPathRelative", function(assert) {
+    var steps = [
+        new Webdext.XPath.IndexedXPathStep("a", 1),
+        new Webdext.XPath.IndexedXPathStep("h2", 1),
+        new Webdext.XPath.IndexedXPathStep("text()", 1)
+    ];
+    assert.deepEqual(
+        Webdext.XPath.parseIndexedXPath("./a[1]/h2[1]/text()[1]"),
+        new Webdext.XPath.IndexedXPath(steps, false)
+    ); 
+});
+QUnit.test("parseIndexedXPathHyperlink", function(assert) {
+    var steps = [
+        new Webdext.XPath.IndexedXPathStep("a", 1),
+        new Webdext.XPath.IndexedXPathStep("@href", 1),
+    ];
+    assert.deepEqual(
+        Webdext.XPath.parseIndexedXPath("./a[1]/@href[1]"),
+        new Webdext.XPath.IndexedXPath(steps, false)
+    ); 
+});
+QUnit.test("parseIndexedXPathImage", function(assert) {
+    var steps = [
+        new Webdext.XPath.IndexedXPathStep("html", 1),
+        new Webdext.XPath.IndexedXPathStep("body", 1),
+        new Webdext.XPath.IndexedXPathStep("img", 1)
+    ];
+    assert.deepEqual(
+        Webdext.XPath.parseIndexedXPath("/html[1]/body[1]/img[1]"),
+        new Webdext.XPath.IndexedXPath(steps)
+    ); 
+});
