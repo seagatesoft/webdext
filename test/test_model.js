@@ -257,7 +257,7 @@ QUnit.test("createWTree", function(assert) {
     );
     assert.strictEqual(
         tree.children[1].children[1].children[0].children[1].children[0].valueOf(),
-        "/html[1]/body[1]/div[2]/div[1]/a[1]/@href"
+        "/html[1]/body[1]/div[2]/div[1]/a[1]/@href[1]"
     );
     assert.strictEqual(
         tree.children[1].children[1].children[0].children[1].children[1].valueOf(),
@@ -346,7 +346,7 @@ QUnit.test("createWTree", function(assert) {
     );
     assert.strictEqual(
         tree.children[1].children[1].children[0].getLeafNodes()[1].valueOf(),
-        "/html[1]/body[1]/div[2]/div[1]/a[1]/@href"
+        "/html[1]/body[1]/div[2]/div[1]/a[1]/@href[1]"
     );
     assert.strictEqual(
         tree.children[1].children[1].children[0].getLeafNodes()[2].valueOf(),
@@ -428,7 +428,7 @@ QUnit.test("createWTree", function(assert) {
     );
     assert.strictEqual(
         tree.children[1].children[1].children[0].children[1].children[0].valueOf(),
-        "/html[1]/body[1]/div[2]/div[1]/a[1]/@href"
+        "/html[1]/body[1]/div[2]/div[1]/a[1]/@href[1]"
     );
     assert.strictEqual(
         tree.children[1].children[1].children[0].children[1].children[1].valueOf(),

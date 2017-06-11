@@ -21,3 +21,19 @@ QUnit.test("evaluateXPath", function(assert) {
         "DIV"
     );
 });
+
+QUnit.module("getValueFromPairMap");
+QUnit.test("getValueFromPairMap", function(assert) {
+    var simPairMap = new Map();
+    var innerMap = new Map();
+    innerMap.set("A", 0.75);
+    simPairMap.set("B", innerMap);
+    assert.strictEqual(
+        Webdext.getValueFromPairMap(simPairMap, "A", "B"),
+        0.75
+    );
+    assert.strictEqual(
+        Webdext.getValueFromPairMap(simPairMap, "B", "A"),
+        0.75
+    );
+});

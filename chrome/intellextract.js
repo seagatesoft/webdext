@@ -1,4 +1,4 @@
-var data, currentPage;
+var data, currentPage, originalTab;
 
 function createPageNumberList(numberOfPages, selectedPageNumber) {
     var select = document.createElement("select");
@@ -54,6 +54,9 @@ function createTable(recSet) {
         }
 
         var input = document.createElement("input");
+        input.id = "columnName_" + i;
+        input.name = "columnName_" + i;
+        input.className = "columnNameInput";
         input.type = "text";
         input.value = "Column " + i;
 
@@ -184,7 +187,7 @@ function pageNumberChangedCallback() {
 }
 
 function removeColumnCallback(event) {
-    if (!confirm("Are you sure to remove this column?")) {
+    if (!window.confirm("Are you sure to remove this column?")) {
         return;
     }
 
@@ -207,7 +210,59 @@ function removeColumnCallback(event) {
     }
 }
 
+function getColumnNames() {
+    var inputElements = document.getElementsByClassName("columnNameInput");
+    var inputElementsLength = inputElements.length,
+        columnNames = {};
+
+    for (var i=inputElementsLength; i--; ) {
+        var inputElement = inputElements[i];
+        var columnNumber = parseInt(inputElement.name.split("_")[1]);
+        columnNames[columnNumber] = inputElement.value;
+    }
+
+    return columnNames;
+}
+
+function saveExtractor() {
+    // wrapper name submitted
+    // send: wrapper name, recSet, columnNames to the original tab
+    // induct wrapper on original tab and store to chrome.storage
+    // notify intellextract page
+    chrome.tabs.get(originalTab.id, function(tab) {
+        if (typeof tab === "undefined") {
+            window.alert("Please keep the source page tab opened to save the extractor.");
+            return;
+        }
+
+        var wrapperName = window.prompt("Enter extractor name");
+        if (wrapperName) {
+            var recSet = data.recSetList[currentPage-1];
+            var columnNames = getColumnNames();
+            var inductionInput = {
+                recSet: recSet,
+                columnNames: columnNames,
+                wrapperName: wrapperName
+            };
+            chrome.tabs.executeScript(
+                originalTab.id,
+                {file: "webdext-inductwrapper.js"},
+                function() {
+                    chrome.tabs.sendMessage(
+                        originalTab.id,
+                        {
+                            info: "inductWrapper",
+                            data: inductionInput
+                        }
+                    );
+                }
+            );
+        }
+    });
+}
+
 chrome.runtime.sendMessage({info: "intellExtractPageLoaded"}, function(response) {
+    originalTab = response.originalTab;
     data = response.data;
 
     if (data.recSetList.length > 0) {
@@ -216,7 +271,7 @@ chrome.runtime.sendMessage({info: "intellExtractPageLoaded"}, function(response)
         var container = document.getElementById("container");
         container.parentNode.removeChild(container);
         document.body.appendChild(document.createTextNode("Can't extract any data."));
-        alert("Can't extract any data.");
+        window.alert("Can't extract any data.");
     }
 });
 
@@ -252,4 +307,20 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     });
+
+    document.getElementById("saveExtractorButton").addEventListener("click", saveExtractor);
+});
+
+chrome.runtime.onMessage.addListener(function(message){
+    if (message.info === "wrapperInducted") {
+        console.log(message);
+        var newExtractor = {};
+        newExtractor[message.data.wrapperName] = JSON.stringify(message.data.wrapper);
+        chrome.storage.local.set(newExtractor, function() {
+            var alertText = "Extractor "+message.data.wrapperName+" saved ";
+            alertText += " ("+message.data.inductionTime+" ms, ";
+            alertText += message.data.memoryUsage+" bytes)";
+            window.alert(alertText);
+        });
+    }
 });

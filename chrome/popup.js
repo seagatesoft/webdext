@@ -1,10 +1,17 @@
 function wrapperExtract(event) {
     var key = event.target.value;
     chrome.storage.local.get(key, function(data) {
+        console.log(data[key]);
         var wrapperData = JSON.parse(data[key]);
         chrome.tabs.executeScript(null, {file: "webdext-wrapperextract.js"}, function() {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {wrapperData: wrapperData});
+                chrome.tabs.sendMessage(
+                    tabs[0].id,
+                    {
+                        info: "wrapperExtract",
+                        data: wrapperData
+                    }
+                );
             });
         });
     });

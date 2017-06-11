@@ -31,6 +31,9 @@
                         dataType = "hyperlink";
                     } else if (dataItem[0].nodeName.toLowerCase() === "src") {
                         dataType = "image";
+                    } else if (dataItem[0].tagName.toLowerCase() === "img") {
+                        dataValue = dataItem[0].src;
+                        dataType = "image";
                     }
 
                     dataRecord[dataItemName] = {type: dataType, value: dataValue};

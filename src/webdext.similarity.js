@@ -3,6 +3,7 @@
 
     // imports
     var DATA_TYPE = Webdext.Model.DATA_TYPE,
+        getValueFromPairMap = Webdext.getValueFromPairMap,
         sequenceEditDistance = Webdext.Sequal.editDistance;
 
     var WEIGHTS = {
@@ -248,14 +249,6 @@
         return similarity;
     };
 
-    function getValueFromSimPairMap(map, e1, e2) {
-        if (map.has(e1) && map.get(e1).has(e2)) {
-            return map.get(e1).get(e2);
-        } else if (map.has(e2) && map.get(e2).has(e1)) {
-            return map.get(e2).get(e1);
-        }
-    }
-
     var wTextNodeSimilarityMap = new SimilarityMap(wTextNodeSimilarity);
     var wHyperlinkNodeSimilarityMap = new SimilarityMap(wHyperlinkNodeSimilarity);
     var wImageNodeSimilarityMap = new SimilarityMap(wImageNodeSimilarity);
@@ -326,7 +319,7 @@
 
             for (j=0; j < dataLength; j++) {
                 if (i !== j) {
-                    var currSimilarity = getValueFromSimPairMap(
+                    var currSimilarity = getValueFromPairMap(
                         simPairMap,
                         data[i],
                         data[j]
@@ -660,7 +653,6 @@
         rectangleSizeSimilarity: rectangleSizeSimilarity,
 
         SimilarityMap: SimilarityMap,
-        getValueFromSimPairMap: getValueFromSimPairMap,
 
         wElementNodeSimilarity: wElementNodeSimilarity,
         wTextNodeSimilarity: wTextNodeSimilarity,

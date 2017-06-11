@@ -27,8 +27,17 @@
         }
     }
 
+    function getValueFromPairMap(map, e1, e2) {
+        if (map.has(e1) && map.get(e1).has(e2)) {
+            return map.get(e1).get(e2);
+        } else if (map.has(e2) && map.get(e2).has(e1)) {
+            return map.get(e2).get(e1);
+        }
+    }
+
     var Webdext = {
-        evaluateXPath: evaluateXPath
+        evaluateXPath: evaluateXPath,
+        getValueFromPairMap: getValueFromPairMap
     };
     Object.defineProperty(Webdext, "version", {value: "0.0.1"});
 

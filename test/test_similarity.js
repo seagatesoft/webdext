@@ -639,19 +639,3 @@ QUnit.test("SimilarityMap", function(assert) {
         0.75
     );
 });
-
-QUnit.module("getValueFromSimPairMap");
-QUnit.test("getValueFromSimPairMap", function(assert) {
-    var parsedUrl1 = Webdext.Model.parseUrl("https://www.amazon.com/dp/0980455278");
-    var parsedUrl2 = Webdext.Model.parseUrl("https://www.amazon.com/dp/0980576806");
-    var similarity = Webdext.Similarity.urlSimilarity(parsedUrl1, parsedUrl2);
-    var simPairMap = new Map();
-    var innerMap = new Map();
-    innerMap.set(parsedUrl2, similarity);
-    simPairMap.set(parsedUrl1, innerMap);
-    assert.strictEqual(
-        Webdext.Similarity.getValueFromSimPairMap(simPairMap, parsedUrl1, parsedUrl2),
-        0.75
-    );
-});
-
