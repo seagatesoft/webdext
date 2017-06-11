@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     var labelElement = document.createElement("label");
                     labelElement.appendChild(document.createTextNode(key));
                     extractorElement.appendChild(labelElement);
+                    extractorElement.appendChild(document.createElement("br"));
                     var buttonElement = document.createElement("button");
                     buttonElement.value = key;
                     buttonElement.addEventListener("click", wrapperExtract);
