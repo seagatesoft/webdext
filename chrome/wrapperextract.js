@@ -71,6 +71,23 @@ function displayDataRecords() {
     document.getElementById("tableContainer").appendChild(createTable(data.dataRecords));
 }
 
+function exportData(event) {
+    var buttonId = event.target.id;
+    var exportDataType = "json";
+
+    if (buttonId === "exportAsCSVButton") {
+        exportDataType = "csv";
+    }
+
+    chrome.runtime.sendMessage({
+        info: "dataExported",
+        data: {
+            dataType: exportDataType,
+            dataRecords: data.dataRecords
+        }
+    });
+}
+
 chrome.runtime.sendMessage({info: "wrapperExtractPageLoaded"}, function(response) {
     data = response.data;
 
@@ -82,4 +99,9 @@ chrome.runtime.sendMessage({info: "wrapperExtractPageLoaded"}, function(response
         document.body.appendChild(document.createTextNode("Can't extract any data."));
         alert("Can't extract any data.");
     }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("exportAsCSVButton").addEventListener("click", exportData);
+    document.getElementById("exportAsJSONButton").addEventListener("click", exportData);
 });

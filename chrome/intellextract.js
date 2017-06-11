@@ -225,10 +225,6 @@ function getColumnNames() {
 }
 
 function saveExtractor() {
-    // wrapper name submitted
-    // send: wrapper name, recSet, columnNames to the original tab
-    // induct wrapper on original tab and store to chrome.storage
-    // notify intellextract page
     chrome.tabs.get(originalTab.id, function(tab) {
         if (typeof tab === "undefined") {
             window.alert("Please keep the source page tab opened to save the extractor.");
@@ -257,6 +253,50 @@ function saveExtractor() {
                     );
                 }
             );
+        }
+    });
+}
+
+function formatExportData(recSet) {
+    var columnNames = getColumnNames();
+    var columnNameIndexes = Object.keys(columnNames);
+    var columnNamesLength = columnNameIndexes.length;
+    var recSetLength = recSet.length,
+        dataRecords = [];
+
+    for (var i=0; i < recSetLength; i++) {
+        var dataRecord = {};
+
+        for (var j=0; j < columnNamesLength; j++) {
+            var columnIndex = parseInt(columnNameIndexes[j]);
+            var columnName = columnNames[columnNameIndexes[j]];
+            dataRecord[columnName] = {
+                type: recSet[i].dataItems[columnIndex-1].type,
+                value: recSet[i].dataItems[columnIndex-1].value
+            };
+        }
+
+        dataRecords.push(dataRecord);
+    }
+
+    return dataRecords;
+}
+
+function exportData(event) {
+    var buttonId = event.target.id;
+    var recSet = data.recSetList[currentPage-1];
+    console.log(recSet.deletedColumns);
+    var exportDataType = "json";
+
+    if (buttonId === "exportAsCSVButton") {
+        exportDataType = "csv";
+    }
+
+    chrome.runtime.sendMessage({
+        info: "dataExported",
+        data: {
+            dataType: exportDataType,
+            dataRecords: formatExportData(recSet)
         }
     });
 }
@@ -309,6 +349,9 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     document.getElementById("saveExtractorButton").addEventListener("click", saveExtractor);
+
+    document.getElementById("exportAsCSVButton").addEventListener("click", exportData);
+    document.getElementById("exportAsJSONButton").addEventListener("click", exportData);
 });
 
 chrome.runtime.onMessage.addListener(function(message){

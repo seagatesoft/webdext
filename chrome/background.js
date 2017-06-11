@@ -1,4 +1,4 @@
-var intellExtractData, wrapperExtractData, originalTab;
+var intellExtractData, wrapperExtractData, exportedData, originalTab;
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
     if (message.info === "dataExtractedByIntell") {
@@ -12,5 +12,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
         sendResponse({data: intellExtractData, originalTab: originalTab});
     } else if (message.info === "wrapperExtractPageLoaded") {
         sendResponse({data: wrapperExtractData});
+    } else if (message.info === "dataExported") {
+        exportedData = message.data;
+        chrome.tabs.create({url: chrome.extension.getURL("exportdata.html")});
+    } else if (message.info === "exportDataPageLoaded") {
+        sendResponse({data: exportedData});
     }
 });
