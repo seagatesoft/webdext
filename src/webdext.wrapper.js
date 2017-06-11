@@ -34,6 +34,9 @@
                     } else if (dataItem[0].tagName.toLowerCase() === "img") {
                         dataValue = dataItem[0].src;
                         dataType = "image";
+                    } else {
+                        dataValue = dataItem[0].textContent;
+                        dataType = "text";
                     }
 
                     dataRecord[dataItemName] = {type: dataType, value: dataValue};
