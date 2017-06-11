@@ -20,7 +20,7 @@ function createTable(data) {
     table.id = "extractorsTable";
     table.className = "table table-striped table-bordered table-hover table-condensed";
     var thead = table.createTHead();
-    var headers = ["Row", "Extractor Name", ""];
+    var headers = ["Row", "Extractor Name", "", ""];
     thead.insertRow(0);
 
     for (var i=0; i < headers.length; i++) {
@@ -39,16 +39,27 @@ function createTable(data) {
         tbody.rows[rowNumber].insertCell(0);
         tbody.rows[rowNumber].id = "row_" + rowNumber;
         tbody.rows[rowNumber].cells[0].appendChild(document.createTextNode((rowNumber+1)+"."));
+
         tbody.rows[rowNumber].insertCell(1);
         tbody.rows[rowNumber].cells[1].appendChild(document.createTextNode(key));
+
         tbody.rows[rowNumber].insertCell(2);
+        var showButton = document.createElement("button");
+        showButton.id = "show_" + rowNumber;
+        showButton.className = "btn btn-primary";
+        showButton.innerText = "Show";
+        showButton.value = key;
+        showButton.addEventListener("click", showExtractor);
+        tbody.rows[rowNumber].cells[2].appendChild(showButton);
+
+        tbody.rows[rowNumber].insertCell(3);
         var deleteButton = document.createElement("button");
         deleteButton.id = "delete_" + rowNumber;
         deleteButton.className = "btn btn-danger";
         deleteButton.innerText = "Delete";
         deleteButton.value = key;
         deleteButton.addEventListener("click", deleteExtractor);
-        tbody.rows[rowNumber].cells[2].appendChild(deleteButton);
+        tbody.rows[rowNumber].cells[3].appendChild(deleteButton);
         rowNumber++;
     }
 
@@ -63,6 +74,16 @@ function deleteExtractor(event) {
         });
         showListOfExtractors();
     }
+}
+
+function showExtractor(event) {
+    var key = event.target.value;
+    chrome.storage.local.get(key, function (data) {
+        document.getElementById("extractorName").value = key;
+        document.getElementById("extractorTextarea").innerText = data[key];
+        document.getElementById("createExtractorArea").className = "show";
+        document.getElementById("createExtractor").value = "show";
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function() {
