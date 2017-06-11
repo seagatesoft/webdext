@@ -304,17 +304,21 @@
         });
         var dataRecordXPath = alignMultipleIndexedXPaths(parsedDataRecordXPaths);
 
-        var dataItemsLength = recSet[0].dataItems.length,
+        var columnNamesIndexes = Object.keys(columnNames),
+            columnNamesLength = columnNamesIndexes.length,
+            dataItemsLength = recSet[0].dataItems.length,
             recSetLength = recSet.length,
             dataItemXPaths = {};
 
-        for (var i=0; i < dataItemsLength; i++) {
-            var relativeDataItemXPaths = [];
+        for (var i=0; i < columnNamesLength; i++) {
+            var columnIndex = columnNamesIndexes[i]-1,
+                relativeDataItemXPaths = [];
+
             for (var j=0; j < recSetLength; j++) {
-                if (recSet[j].dataItems[i].xpath) {
+                if (recSet[j].dataItems[columnIndex].xpath) {
                     var relativeDataItemXPath = getRelativeXPath(
                         parsedDataRecordXPaths[j],
-                        parseIndexedXPath(recSet[j].dataItems[i].xpath)
+                        parseIndexedXPath(recSet[j].dataItems[columnIndex].xpath)
                     );
                     relativeDataItemXPaths.push(relativeDataItemXPath);
                 }
@@ -322,9 +326,9 @@
 
             if (relativeDataItemXPaths.length > 1) {
                 var dataItemXPath = alignMultipleIndexedXPaths(relativeDataItemXPaths);
-                dataItemXPaths[columnNames[i+1]] = dataItemXPath.toString();
+                dataItemXPaths[columnNames[columnIndex+1]] = dataItemXPath.toString();
             } else {
-                dataItemXPaths[columnNames[i+1]] = relativeDataItemXPaths[0].toString();
+                dataItemXPaths[columnNames[columnIndex+1]] = relativeDataItemXPaths[0].toString();
             }
         }
 
