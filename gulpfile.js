@@ -1,7 +1,7 @@
 var gulp = require("gulp");
 var concat = require("gulp-concat");
 
-var intellExtractFiles = [
+var intellExtractChromeFiles = [
   "src/webdext.init.js",
   "src/webdext.xpath.js",
   "src/webdext.sequal.js",
@@ -10,12 +10,12 @@ var intellExtractFiles = [
   "src/webdext.extraction.js",
   "src/webdext.chrome.intellextract.js"
 ];
-var wrapperExtractFiles = [
+var wrapperExtractChromeFiles = [
   "src/webdext.init.js",
   "src/webdext.wrapper.js",
   "src/webdext.chrome.wrapperextract.js"
 ];
-var inductWrapperFiles = [
+var inductWrapperChromeFiles = [
   "src/webdext.init.js",
   "src/webdext.xpath.js",
   "src/webdext.sequal.js",
@@ -23,17 +23,42 @@ var inductWrapperFiles = [
   "src/webdext.chrome.inductwrapper.js"
 ];
 
+var intellExtractHeadlessFiles = [
+  "src/webdext.init.js",
+  "src/webdext.xpath.js",
+  "src/webdext.sequal.js",
+  "src/webdext.model.js",
+  "src/webdext.similarity.js",
+  "src/webdext.extraction.js"
+];
+var wrapperExtractHeadlessFiles = [
+  "src/webdext.init.js",
+  "src/webdext.wrapper.js"
+];
+
 gulp.task("build-chrome", [], function() {
   console.log("Build as Chrome extension");
-  gulp.src(intellExtractFiles)
+  gulp.src(intellExtractChromeFiles)
       .pipe(concat("webdext-intellextract.js"))
       .pipe(gulp.dest("build/"));
-  gulp.src(wrapperExtractFiles)
+  gulp.src(wrapperExtractChromeFiles)
       .pipe(concat("webdext-wrapperextract.js"))
       .pipe(gulp.dest("build/"));
-  gulp.src(inductWrapperFiles)
+  gulp.src(inductWrapperChromeFiles)
       .pipe(concat("webdext-inductwrapper.js"))
       .pipe(gulp.dest("build/"));
   gulp.src("chrome/**/*")
+      .pipe(gulp.dest("build/"));
+});
+
+gulp.task("build-phantom", [], function() {
+  console.log("Build as Chrome extension");
+  gulp.src(intellExtractHeadlessFiles)
+      .pipe(concat("webdext-intellextract.js"))
+      .pipe(gulp.dest("build/"));
+  gulp.src(wrapperExtractHeadlessFiles)
+      .pipe(concat("webdext-wrapperextract.js"))
+      .pipe(gulp.dest("build/"));
+  gulp.src("phantom/**/*")
       .pipe(gulp.dest("build/"));
 });
