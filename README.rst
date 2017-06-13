@@ -19,7 +19,7 @@ Installation and usage
 2. `PhantomJS script`_
 
 .. _Chrome extension: http://github.com/seagatesoft/webdext
-.. _PhantomJS: http://github.com/seagatesoft/webdext
+.. _PhantomJS script: http://github.com/seagatesoft/webdext
 
 
 Internals
