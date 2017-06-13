@@ -28,11 +28,11 @@ Internals
 1. Intelligent extraction algorithm is heavily based on AutoRM [1]_ and DAG-MTM [2]_ (not an exact implementation though).
 2. XPath wrapper induction algorithm is based on [3]_.
 
-.. [1] `Shengsheng Shi , Chengfei Liu, Yi Shen, Chunfeng Yuan, Yihua Huang. 2015. AutoRM: An effective approach for automatic Web data record mining. Knowledge-Based Systems, 89, 314–331. doi:10.1016/j.knosys.2015.07.012 <>`_
+.. [1] `Shengsheng Shi , Chengfei Liu, Yi Shen, Chunfeng Yuan, Yihua Huang. 2015. AutoRM: An effective approach for automatic Web data record mining. Knowledge-Based Systems, 89, 314–331. doi:10.1016/j.knosys.2015.07.012 <http://dl.acm.org/citation.cfm?id=2840138http://dl.acm.org/citation.cfm?id=2840138>`_
 
-.. [2] `Shengsheng Shi , Chengfei Liu, Chunfeng Yuan, Yihua Huang. 2014. Multi-feature and DAG-based multi-tree matching algorithm for automatic web data mining. Proceedings of International Joint Conferences on Web Intelligence and Intelligent Agent Technology, 739–755. doi:10.1109/WI-IAT.2014.24 <>`_
+.. [2] `Shengsheng Shi , Chengfei Liu, Chunfeng Yuan, Yihua Huang. 2014. Multi-feature and DAG-based multi-tree matching algorithm for automatic web data mining. Proceedings of International Joint Conferences on Web Intelligence and Intelligent Agent Technology, 739–755. doi:10.1109/WI-IAT.2014.24 <http://dl.acm.org/citation.cfm?id=2682781>`_
 
-.. [3] `Joachim Nielandt, Antoon Bronselaer, Guy de Tré. 2016. Predicate enrichment of aligned XPaths for wrapper induction. Expert Systems With Applications 51, 259–275. doi:10.1016/j.eswa.2015.12.040 <>`_ 
+.. [3] `Joachim Nielandt, Antoon Bronselaer, Guy de Tré. 2016. Predicate enrichment of aligned XPaths for wrapper induction. Expert Systems With Applications 51, 259–275. doi:10.1016/j.eswa.2015.12.040 <http://dl.acm.org/citation.cfm?id=2895045>`_ 
 
 Author
 ======
