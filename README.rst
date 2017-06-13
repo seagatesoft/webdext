@@ -18,8 +18,8 @@ Installation and usage
 1. `Chrome Extension`_
 2. `PhantomJS script`_
 
-.. _Chrome extension: http://github.com/seagatesoft/webdext
-.. _PhantomJS script: http://github.com/seagatesoft/webdext
+.. _Chrome extension: https://github.com/seagatesoft/webdext/wiki/Chrome-extension
+.. _PhantomJS script: https://github.com/seagatesoft/webdext/wiki/PhantomJS-script
 
 
 Internals
