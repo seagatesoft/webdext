@@ -25,7 +25,7 @@ Installation and usage
 Internals
 =========
 
-1. Intelligent extraction algorithm is heavily based on AutoRM[1]_ and DAG-MTM[2]_, though not an exact implementation.
+1. Intelligent extraction algorithm is heavily based on AutoRM [1]_ and DAG-MTM [2]_ (not an exact implementation though).
 2. XPath wrapper induction algorithm is based on [3]_.
 
 .. [1] `Shengsheng Shi , Chengfei Liu, Yi Shen, Chunfeng Yuan, Yihua Huang. 2015. AutoRM: An effective approach for automatic Web data record mining. Knowledge-Based Systems, 89, 314–331. doi:10.1016/j.knosys.2015.07.012 <>`_
@@ -37,4 +37,4 @@ Internals
 Author
 ======
 
-Sigit Dewanto (sigitdewanto11[at]yahoo[dot]co[dot]uk)
+Sigit Dewanto, sigitdewanto11[at]yahoo[dot]co[dot]uk
