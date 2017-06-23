@@ -1,11 +1,16 @@
 function convertToCSV(dataRecords) {
-    var dataRecordsLength = dataRecords.length,
+    var keys = Object.keys(dataRecords[0]),
+        keysLength = keys.length,
+        dataRecordsLength = dataRecords.length,
         csvArray = [];
 
+    var labels = keys.map(function(k) {
+        return '"' + k.trim() + '"';
+    });
+    csvArray.push(labels.join(","));
+
     for (var i=0; i < dataRecordsLength; i++) {
-        var keys = Object.keys(dataRecords[i]),
-            keysLength = keys.length,
-            values = [];
+        var values = [];
 
         for (var j=0; j < keysLength; j++)  {
             var value = '"' + dataRecords[i][keys[j]].value + '"';
