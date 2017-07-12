@@ -36,6 +36,17 @@ var wrapperExtractHeadlessFiles = [
   "src/webdext.wrapper.js"
 ];
 
+var chromeDebugFiles = [
+  "src/webdext.init.js",
+  "src/webdext.xpath.js",
+  "src/webdext.sequal.js",
+  "src/webdext.model.js",
+  "src/webdext.similarity.js",
+  "src/webdext.extraction.js",
+  "src/webdext.wrapper.js",
+  "src/webdext.induction.js"
+];
+
 gulp.task("build-chrome", [], function() {
   console.log("Build as Chrome extension");
   gulp.src(intellExtractChromeFiles)
@@ -60,5 +71,14 @@ gulp.task("build-phantom", [], function() {
       .pipe(concat("webdext-wrapperextract.js"))
       .pipe(gulp.dest("build/"));
   gulp.src("phantom/**/*")
+      .pipe(gulp.dest("build/"));
+});
+
+gulp.task("build-chrome-debug", [], function() {
+  console.log("Build as Chrome extension for debugging");
+  gulp.src(chromeDebugFiles)
+      .pipe(concat("webdext.js"))
+      .pipe(gulp.dest("build/"));
+  gulp.src("chrome-debug/**/*")
       .pipe(gulp.dest("build/"));
 });
