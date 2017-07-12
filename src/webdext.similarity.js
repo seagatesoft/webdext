@@ -522,14 +522,6 @@
             leafNodes2[i].inTree1 = false;
         }
 
-        var diffProportion = Math.min(
-                leafNodes1Length, leafNodes2Length
-            ) / Math.max(leafNodes1Length, leafNodes2Length);
-
-        if (diffProportion < THRESHOLDS.TREE) {
-            return diffProportion;
-        }
-
         var leafNodesSet = leafNodes1.concat(leafNodes2);
         var leafNodeClusters = clusterWNodes(leafNodesSet);
         var leafNodeClustersLength = leafNodeClusters.length,
