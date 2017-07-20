@@ -148,6 +148,7 @@
             }
         } else {
             outboundVertices = [toVertex];
+            this.outboundMap.set(fromVertex, outboundVertices);
         }
     };
     DirectedAcyclicGraph.prototype._isBeforeOrder = function(vertex1, vertex2) {
