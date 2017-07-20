@@ -293,7 +293,7 @@
             clusters.push([data[i]]);
         }
 
-        // @EXPERIMENTAL
+        // Need dataLength > 100 to optimize on amazon.com-search pages
         if (dataLength === 1 || dataLength > 100) {
             return clusters;
         }
