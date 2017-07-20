@@ -293,7 +293,8 @@
             clusters.push([data[i]]);
         }
 
-        if (dataLength === 1) {
+        // @EXPERIMENTAL
+        if (dataLength === 1 || dataLength > 100) {
             return clusters;
         }
 
