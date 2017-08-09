@@ -9,6 +9,7 @@
         LocationXPath = Webdext.XPath.LocationXPath,
         IndexedXPath = Webdext.XPath.IndexedXPath,
         parseIndexedXPath = Webdext.XPath.parseIndexedXPath,
+        getIndexedXPathStep = Webdext.XPath.getIndexedXPathStep,
         editDistance = Webdext.Sequal.editDistance,
         alignPairwise = Webdext.Sequal.alignPairwise;
 
@@ -299,43 +300,375 @@
     };
 
     function inductWrapper(recSet, columnNames) {
-        var parsedDataRecordXPaths = recSet.map(function(record) {
-            return parseIndexedXPath(record.nodeXPaths[0]);
-        });
-        var dataRecordXPath = alignMultipleIndexedXPaths(parsedDataRecordXPaths);
+        var recSetLength = recSet.length,
+            dataRecordFirstNodes = [],
+            parsedDataRecordXPaths = [];
+
+        for (var i=0; i < recSetLength; i++) {
+            var xpathString = recSet[i].nodeXPaths[0];
+            parsedDataRecordXPaths.push(parseIndexedXPath(xpathString));
+
+            var drFirstNode = evaluateXPath(xpathString)[0];
+            dataRecordFirstNodes.push(drFirstNode);
+        }
+
+        var dataRecordXPath = inductDataRecordXPath(dataRecordFirstNodes);
 
         var columnNamesIndexes = Object.keys(columnNames),
             columnNamesLength = columnNamesIndexes.length,
             dataItemsLength = recSet[0].dataItems.length,
-            recSetLength = recSet.length,
             dataItemXPaths = {};
 
-        for (var i=0; i < columnNamesLength; i++) {
+        for (i=0; i < columnNamesLength; i++) {
             var columnIndex = columnNamesIndexes[i]-1,
-                relativeDataItemXPaths = [];
+                dataRecordNodes = [],
+                dataItemNodes = [];
 
             for (var j=0; j < recSetLength; j++) {
                 if (recSet[j].dataItems[columnIndex].xpath) {
-                    var relativeDataItemXPath = getRelativeXPath(
-                        parsedDataRecordXPaths[j],
-                        parseIndexedXPath(recSet[j].dataItems[columnIndex].xpath)
-                    );
-                    relativeDataItemXPaths.push(relativeDataItemXPath);
+                    dataRecordNodes.push(dataRecordFirstNodes[j]);
+                    var diNode = evaluateXPath(recSet[j].dataItems[columnIndex].xpath)[0];
+                    dataItemNodes.push(diNode);
                 }
             }
 
-            if (relativeDataItemXPaths.length > 1) {
-                var dataItemXPath = alignMultipleIndexedXPaths(relativeDataItemXPaths);
-                dataItemXPaths[columnNames[columnIndex+1]] = dataItemXPath.toString();
-            } else {
-                dataItemXPaths[columnNames[columnIndex+1]] = relativeDataItemXPaths[0].toString();
-            }
+            var dataItemXPath = inductDataItemXPath(dataRecordNodes, dataItemNodes);
+            dataItemXPaths[columnNames[columnIndex+1]] = dataItemXPath;
         }
 
         return {
-            dataRecordXPath: dataRecordXPath.toString(),
+            dataRecordXPath: dataRecordXPath,
             dataItemXPaths: dataItemXPaths
         };
+    }
+
+    function getUniqueElements(array) {
+        var arrayLength = array.length,
+            valueMap = new Map(),
+            uniqueElements = [];
+
+        for (var i=arrayLength; i--; ) {
+            valueMap.set(array[i], true);
+        }
+
+        var keys = valueMap.keys();
+        var key = keys.next();
+        while (!key.done) {
+            uniqueElements.push(key.value);
+            key = keys.next();
+        }
+
+        return uniqueElements;
+    }
+
+    function getCombinationList(array, size) {
+        var arrayLength = array.length;
+
+        if (size > arrayLength) {
+            throw new Error("Combination size can't be greater than array.length");
+        }
+
+        var combinationIndexes = new Array(size),
+            combinationList = [];
+
+        for (var i=size; i--; ) {
+            combinationIndexes[i] = i;
+        }
+
+        var anyIncrement = true;
+
+        while(anyIncrement) {
+            var combination = new Array(size);
+            for (i=size; i--; ) {
+                combination[i] = array[combinationIndexes[i]];
+            }
+            combinationList.push(combination);
+
+            var j = arrayLength-1,
+                anyIncrement = false;
+
+            for (i=size; i--; ) {
+                if (combinationIndexes[i] < j) {
+                    anyIncrement = true;
+                    combinationIndexes[i]++;
+                    for (var k=i+1; k < size; k++) {
+                        combinationIndexes[k] = combinationIndexes[k-1] + 1;
+                    }
+                    break;
+                }
+                j--;
+            }
+        }
+
+        return combinationList;
+    }
+
+    function inductElementXPathStep(elementNodes) {
+        var tags = elementNodes.map(function(e) { return e.nodeName.toLowerCase();});
+        tags = getUniqueElements(tags);
+
+        if (tags.length === 1) {
+            return new XPathStep({nodetest: tags[0]});
+        }
+
+        var predicates = tags.map(function(tag) {
+            return "self::" + tag;
+        });
+        var predicateString = predicates.join(" or ");
+
+        return new XPathStep({nodetest: "*", predicates: [predicateString]});
+    }
+
+    function getCommonClasses(elementNodes) {
+        var elementNodesLength = elementNodes.length,
+            classCounter = new Map(),
+            commonClasses = [];
+
+        for (var i=elementNodesLength; i--; ) {
+            var classList = getUniqueElements(elementNodes[i].classList);
+            var classListLength = classList.length;
+            for (var j=classListLength; j--; ) {
+                if (classList[j] !== "") {
+                    var counter = classCounter.get(classList[j]);
+                    if (typeof counter === "undefined") {
+                        classCounter.set(classList[j], 1);
+                    } else {
+                        classCounter.set(classList[j], counter + 1);
+                    }
+                }
+            }
+        }
+
+        var entries = classCounter.entries();
+        var entry = entries.next();
+        while (!entry.done) {
+            if (entry.value[1] === elementNodesLength) {
+                commonClasses.push(entry.value[0]);
+            }
+            entry = entries.next();
+        }
+
+        return commonClasses;
+    }
+
+    function constructHasClassPredicate(className) {
+        return "contains(concat(' ', @class, ' '), ' " + className + " ')";
+    }
+
+    function cloneWithClassPredicates(xpathStep, classes) {
+        var classPredicates = classes.map(function(c) {
+            return constructHasClassPredicate(c);
+        });
+        var nodetest = xpathStep.nodetest;
+        var predicates = [];
+        if (xpathStep.predicates) {
+            predicates = xpathStep.predicates.concat(classPredicates);
+        } else {
+            predicates.push.apply(predicates, classPredicates);
+        }
+
+        return new XPathStep({nodetest: nodetest, predicates: predicates});
+    }
+
+    function testXPath(xpathString, elementNodes) {
+        var elementNodesLength = elementNodes.length;
+        var testNodes = evaluateXPath(xpathString);
+        var testNodesLength = testNodes.length;
+
+        return elementNodesLength === testNodesLength;
+    }
+
+    function anyBodyElement(nodes) {
+        return nodes.some(function(node) {
+            return node.nodeName.toLowerCase() === "body";
+        });
+    }
+
+    function inductDataRecordXPath(elementNodes) {
+        var nodes = elementNodes,
+            steps = [];
+
+        do {
+            var baseStep = inductElementXPathStep(nodes);
+            var xpathStep = baseStep;
+            var commonClasses = getCommonClasses(nodes);
+            var commonClassesLength = commonClasses.length;
+
+            for (var i=1; i <= commonClassesLength; i++) {
+                var classCombinationList = getCombinationList(commonClasses, i);
+                var classCombinationListLength = classCombinationList.length;
+
+                for (var j=0; j < classCombinationListLength; j++) {
+                    xpathStep = cloneWithClassPredicates(baseStep, classCombinationList[j]);
+                    var xpathSteps = [xpathStep].concat(steps);
+                    var locXPath = new LocationXPath(xpathSteps);
+                    var locXPathString = "/" + locXPath.toString();
+
+                    if (testXPath(locXPathString, elementNodes)) {
+                        return locXPathString;
+                    }
+                }
+            }
+
+            var indexedXPathSteps = nodes.map(function(node) {
+                return getIndexedXPathStep(node);
+            });
+            var nodePositions = indexedXPathSteps.map(function(xs) {
+                return xs.position;
+            });
+            nodePositions = getUniqueElements(nodePositions);
+
+            if (nodePositions.length === 1) {
+                if (xpathStep.predicates) {
+                    xpathStep.predicates.push(nodePositions[0]);
+                } else {
+                    xpathStep.predicates = [nodePositions[0]];
+                }
+            }
+
+            steps.unshift(xpathStep);
+            nodes = nodes.map(function(e) {
+                return e.parentNode;
+            });
+            nodes = getUniqueElements(nodes);
+        } while (!anyBodyElement(nodes));
+
+        return "/" + new LocationXPath(steps).toString();
+    }
+
+    function reachedDataRecordNode(dataRecordNodes, nodes) {
+        var nodesLength = nodes.length;
+
+        for (var i=nodesLength; i--; ) {
+            if (dataRecordNodes[i].isSameNode(nodes[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function inductLeafXPathStep(nodes) {
+        if (nodes[0].nodeType === Node.ATTRIBUTE_NODE) {
+            return new XPathStep({abbreviation: "@" + nodes[0].nodeName});
+        }
+
+        var nodeNames = nodes.map(function(n) {
+            if (n.nodeType === Node.TEXT_NODE) {
+                return "text()";
+            }
+
+            return n.nodeName.toLowerCase();
+        });
+        nodeNames = getUniqueElements(nodeNames);
+        var xpathStep = null;
+
+        if (nodeNames.length === 1) {
+            xpathStep = new XPathStep({nodetest: nodeNames[0]});
+        } else {
+            var predicates = nodeNames.map(function(nodeName) {
+                return "self::" + nodeName;
+            });
+            var predicateString = predicates.join(" or ");
+
+            xpathStep = new XPathStep({nodetest: "*", predicates: [predicateString]});
+        }
+
+        var indexedXPathSteps = nodes.map(function(node) {
+            return getIndexedXPathStep(node);
+        });
+        var nodePositions = indexedXPathSteps.map(function(xs) {
+            return xs.position;
+        });
+        nodePositions = getUniqueElements(nodePositions);
+
+        if (nodePositions.length === 1) {
+            if (xpathStep.predicates) {
+                xpathStep.predicates.push(nodePositions[0]);
+            } else {
+                xpathStep.predicates = [nodePositions[0]];
+            }
+        }
+
+        return xpathStep;
+    }
+
+    function testDataItemXPath(xpathString, dataRecordNodes, dataItemNodes) {
+        var nodesLength = dataRecordNodes.length;
+
+        for (var i=nodesLength; i--; ) {
+            var testNode = evaluateXPath(xpathString, dataRecordNodes[i]);
+            if (testNode.length === 0) {
+                return false;
+            }
+
+            if (!testNode[0].isSameNode(dataItemNodes[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function inductDataItemXPath(dataRecordNodes, dataItemNodes) {
+        var nodes = dataItemNodes,
+            steps = [];
+
+        var leafStep = inductLeafXPathStep(nodes);
+        steps.unshift(leafStep);
+        nodes = nodes.map(function(e) {
+            if (e.nodeType === Node.ATTRIBUTE_NODE) {
+                return e.ownerElement;
+            }
+
+            return e.parentNode;
+        });
+
+        do {
+            var baseStep = inductElementXPathStep(nodes);
+            var xpathStep = baseStep;
+            var commonClasses = getCommonClasses(nodes);
+            var commonClassesLength = commonClasses.length;
+
+            for (var i=1; i <= commonClassesLength; i++) {
+                var classCombinationList = getCombinationList(commonClasses, i);
+                var classCombinationListLength = classCombinationList.length;
+
+                for (var j=0; j < classCombinationListLength; j++) {
+                    xpathStep = cloneWithClassPredicates(baseStep, classCombinationList[j]);
+                    var xpathSteps = [xpathStep].concat(steps);
+                    var locXPath = new LocationXPath(xpathSteps);
+                    var locXPathString = "./" + locXPath.toString();
+
+                    if (testDataItemXPath(locXPathString, dataRecordNodes, dataItemNodes)) {
+                        return locXPathString;
+                    }
+                }
+            }
+
+            var indexedXPathSteps = nodes.map(function(node) {
+                return getIndexedXPathStep(node);
+            });
+            var nodePositions = indexedXPathSteps.map(function(xs) {
+                return xs.position;
+            });
+            nodePositions = getUniqueElements(nodePositions);
+
+            if (nodePositions.length === 1) {
+                if (xpathStep.predicates) {
+                    xpathStep.predicates.push(nodePositions[0]);
+                } else {
+                    xpathStep.predicates = [nodePositions[0]];
+                }
+            }
+
+            steps.unshift(xpathStep);
+            nodes = nodes.map(function(e) {
+                return e.parentNode;
+            });
+        } while (!reachedDataRecordNode(dataRecordNodes, nodes));
+
+        return "./" + new LocationXPath(steps).toString();
     }
 
     // exports
