@@ -166,7 +166,7 @@
         }
 
         var elements = evaluateXPath("./" + nodetest, node.parentNode);
-        var elementsLength =  elements.length, position = 0;
+        var elementsLength = elements.length, position = 0;
 
         for (var i=0; i < elementsLength; i++) {
             if (elements[i].isSameNode(node)) {

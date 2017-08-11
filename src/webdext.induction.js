@@ -484,6 +484,34 @@
         });
     }
 
+    function getCommonPosition(xpathStep, nodes) {
+        var xpathString = "./" + xpathStep.toString(),
+            nodesLength = nodes.length,
+            positions = new Array(nodesLength);
+
+        for (var i=nodesLength; i--; ) {
+            var elements = evaluateXPath(xpathString, nodes[i].parentNode);
+            var elementsLength = elements.length, position = 0;
+
+            for (var j=0; j < elementsLength; j++) {
+                if (elements[j].isSameNode(nodes[i])) {
+                    position = j + 1;
+                    break;
+                }
+            }
+
+            positions[i] = position;
+        }
+
+        positions = getUniqueElements(positions);
+
+        if (positions.length === 1) {
+            return positions[0];
+        }
+
+        return 0;
+    }
+
     function inductDataRecordXPath(elementNodes) {
         var nodes = elementNodes,
             steps = [];
@@ -510,19 +538,12 @@
                 }
             }
 
-            var indexedXPathSteps = nodes.map(function(node) {
-                return getIndexedXPathStep(node);
-            });
-            var nodePositions = indexedXPathSteps.map(function(xs) {
-                return xs.position;
-            });
-            nodePositions = getUniqueElements(nodePositions);
-
-            if (nodePositions.length === 1) {
+            var commonPosition = getCommonPosition(xpathStep, nodes);
+            if (commonPosition !== 0) {
                 if (xpathStep.predicates) {
-                    xpathStep.predicates.push(nodePositions[0]);
+                    xpathStep.predicates.push(commonPosition);
                 } else {
-                    xpathStep.predicates = [nodePositions[0]];
+                    xpathStep.predicates = [commonPosition];
                 }
             }
 
@@ -571,7 +592,7 @@
             });
             var predicateString = predicates.join(" or ");
 
-            xpathStep = new XPathStep({nodetest: "*", predicates: [predicateString]});
+            xpathStep = new XPathStep({nodetest: "node()", predicates: [predicateString]});
         }
 
         var indexedXPathSteps = nodes.map(function(node) {
@@ -614,15 +635,21 @@
         var nodes = dataItemNodes,
             steps = [];
 
-        var leafStep = inductLeafXPathStep(nodes);
-        steps.unshift(leafStep);
-        nodes = nodes.map(function(e) {
-            if (e.nodeType === Node.ATTRIBUTE_NODE) {
-                return e.ownerElement;
-            }
-
-            return e.parentNode;
+        var allNodesAreElement = nodes.every(function(node) {
+            return node.nodeType === Node.ELEMENT_NODE;
         });
+
+        if (!allNodesAreElement) {
+            var leafStep = inductLeafXPathStep(nodes);
+            steps.unshift(leafStep);
+            nodes = nodes.map(function(e) {
+                if (e.nodeType === Node.ATTRIBUTE_NODE) {
+                    return e.ownerElement;
+                }
+
+                return e.parentNode;
+            });
+        }
 
         do {
             var baseStep = inductElementXPathStep(nodes);
@@ -646,19 +673,12 @@
                 }
             }
 
-            var indexedXPathSteps = nodes.map(function(node) {
-                return getIndexedXPathStep(node);
-            });
-            var nodePositions = indexedXPathSteps.map(function(xs) {
-                return xs.position;
-            });
-            nodePositions = getUniqueElements(nodePositions);
-
-            if (nodePositions.length === 1) {
+            var commonPosition = getCommonPosition(xpathStep, nodes);
+            if (commonPosition !== 0) {
                 if (xpathStep.predicates) {
-                    xpathStep.predicates.push(nodePositions[0]);
+                    xpathStep.predicates.push(commonPosition);
                 } else {
-                    xpathStep.predicates = [nodePositions[0]];
+                    xpathStep.predicates = [commonPosition];
                 }
             }
 
