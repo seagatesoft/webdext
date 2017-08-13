@@ -329,6 +329,9 @@
                     dataRecordNodes.push(dataRecordFirstNodes[j]);
                     var diNode = evaluateXPath(recSet[j].dataItems[columnIndex].xpath)[0];
                     dataItemNodes.push(diNode);
+                } else {
+                    dataRecordNodes.push(dataRecordFirstNodes[j]);
+                    dataItemNodes.push(null);
                 }
             }
 
@@ -554,7 +557,7 @@
             nodes = getUniqueElements(nodes);
         } while (!anyBodyElement(nodes));
 
-        return "/" + new LocationXPath(steps).toString();
+        return "/html/body/" + new LocationXPath(steps).toString();
     }
 
     function reachedDataRecordNode(dataRecordNodes, nodes) {
@@ -574,12 +577,12 @@
             return new XPathStep({abbreviation: "@" + nodes[0].nodeName});
         }
 
-        var nodeNames = nodes.map(function(n) {
-            if (n.nodeType === Node.TEXT_NODE) {
+        var nodeNames = nodes.map(function(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
                 return "text()";
             }
 
-            return n.nodeName.toLowerCase();
+            return node.nodeName.toLowerCase();
         });
         nodeNames = getUniqueElements(nodeNames);
         var xpathStep = null;
@@ -619,11 +622,12 @@
 
         for (var i=nodesLength; i--; ) {
             var testNode = evaluateXPath(xpathString, dataRecordNodes[i]);
-            if (testNode.length === 0) {
-                return false;
-            }
 
-            if (!testNode[0].isSameNode(dataItemNodes[i])) {
+            if (dataItemNodes[i] === null && testNode.length > 0) {
+                return false;
+            } else if (testNode.length === 0) {
+                return false;
+            } else if (!testNode[0].isSameNode(dataItemNodes[i])) {
                 return false;
             }
         }
@@ -632,8 +636,17 @@
     }
 
     function inductDataItemXPath(dataRecordNodes, dataItemNodes) {
-        var nodes = dataItemNodes,
+        var nodesLength = dataRecordNodes.length,
+            recordNodesWithDataItem = [],
+            nodes = [],
             steps = [];
+
+        for (var i=0; i < nodesLength; i++) {
+            if (dataItemNodes[i] !== null) {
+                recordNodesWithDataItem.push(dataRecordNodes[i]);
+                nodes.push(dataItemNodes[i]);
+            }
+        }
 
         var allNodesAreElement = nodes.every(function(node) {
             return node.nodeType === Node.ELEMENT_NODE;
@@ -657,7 +670,7 @@
             var commonClasses = getCommonClasses(nodes);
             var commonClassesLength = commonClasses.length;
 
-            for (var i=1; i <= commonClassesLength; i++) {
+            for (i=1; i <= commonClassesLength; i++) {
                 var classCombinationList = getCombinationList(commonClasses, i);
                 var classCombinationListLength = classCombinationList.length;
 
@@ -686,7 +699,7 @@
             nodes = nodes.map(function(e) {
                 return e.parentNode;
             });
-        } while (!reachedDataRecordNode(dataRecordNodes, nodes));
+        } while (!reachedDataRecordNode(recordNodesWithDataItem, nodes));
 
         return "./" + new LocationXPath(steps).toString();
     }
