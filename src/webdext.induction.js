@@ -301,13 +301,10 @@
 
     function inductWrapper(recSet, columnNames) {
         var recSetLength = recSet.length,
-            dataRecordFirstNodes = [],
-            parsedDataRecordXPaths = [];
+            dataRecordFirstNodes = [];
 
         for (var i=0; i < recSetLength; i++) {
             var xpathString = recSet[i].nodeXPaths[0];
-            parsedDataRecordXPaths.push(parseIndexedXPath(xpathString));
-
             var drFirstNode = evaluateXPath(xpathString)[0];
             dataRecordFirstNodes.push(drFirstNode);
         }
@@ -325,12 +322,12 @@
                 dataItemNodes = [];
 
             for (var j=0; j < recSetLength; j++) {
+                dataRecordNodes.push(dataRecordFirstNodes[j]);
+
                 if (recSet[j].dataItems[columnIndex].xpath) {
-                    dataRecordNodes.push(dataRecordFirstNodes[j]);
                     var diNode = evaluateXPath(recSet[j].dataItems[columnIndex].xpath)[0];
                     dataItemNodes.push(diNode);
                 } else {
-                    dataRecordNodes.push(dataRecordFirstNodes[j]);
                     dataItemNodes.push(null);
                 }
             }
@@ -623,9 +620,11 @@
         for (var i=nodesLength; i--; ) {
             var testNode = evaluateXPath(xpathString, dataRecordNodes[i]);
 
-            if (dataItemNodes[i] === null && testNode.length > 0) {
+            if (dataItemNodes[i] === null && testNode.length === 0) {
+                continue;
+            } else if (dataItemNodes[i] === null && testNode.length > 0) {
                 return false;
-            } else if (testNode.length === 0) {
+            } else if (dataItemNodes[i] !== null && testNode.length === 0) {
                 return false;
             } else if (!testNode[0].isSameNode(dataItemNodes[i])) {
                 return false;
