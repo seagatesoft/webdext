@@ -452,7 +452,7 @@
     }
 
     function constructHasClassPredicate(className) {
-        return "contains(concat(' ', @class, ' '), ' " + className + " ')";
+        return "contains(concat(' ', translate(@class, '\n', ' '), ' '), ' " + className + " ')";
     }
 
     function cloneWithClassPredicates(xpathStep, classes) {
