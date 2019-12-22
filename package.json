@@ -28,5 +28,8 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1"
+  },
+  "dependencies": {
+    "gulp-cli": "^2.2.0"
   }
 }
