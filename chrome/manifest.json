@@ -4,8 +4,6 @@
   "description": "Intelligent Web Data Extractor",
   "version": "0.0.1",
   "permissions": [
-    "http://*/*",
-    "https://*/*",
     "activeTab",
     "tabs",
     "storage"
