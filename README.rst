@@ -7,10 +7,16 @@ Webdext is a Javascript library for web data extraction (web scraping). Currentl
 In order to use it, you must run Webdext inside the web page context. There are 2 ways to do that:
 
 1. Use it as browser extension (currently, I only implemented the Chrome extension) 
-2. Inject the script into the web page context using headless browser such as PhantomJS_ or Splash_ (currently, I only implemented the runner script for PhantomJS)
+2. Inject the script into the web page context using headless browser such as _Puppeteer_, PhantomJS_, or Splash_ (currently, I only implemented the runner script for PhantomJS)
 
+.. _Puppeteer: https://pptr.dev/
 .. _PhantomJS: http://phantomjs.org/
 .. _Splash: http://github.com/scrapinghub/splash
+
+See how it works as Chrome extension |DemoVideo|_
+
+.. |DemoVideo| image:: https://img.youtube.com/vi/TmSgcPI25Qc/0.jpg
+.. _DemoVideo: https://www.youtube.com/watch?v=TmSgcPI25Qc
 
 Installation and usage
 ======================
