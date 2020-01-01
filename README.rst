@@ -13,7 +13,7 @@ In order to use it, you must run Webdext inside the web page context. There are 
 .. _PhantomJS: http://phantomjs.org/
 .. _Splash: http://github.com/scrapinghub/splash
 
-See how it works as Chrome extension 
+Check the video below to see how it works as Chrome extension: 
 
 |DemoVideo|_
 
