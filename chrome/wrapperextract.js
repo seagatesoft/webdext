@@ -1,5 +1,41 @@
 var data;
 
+function convertToCSV(dataRecords) {
+    var regExp = /[",]/,
+        regExpTesto = /(")/g,
+        keys = Object.keys(dataRecords[0]),
+        keysLength = keys.length,
+        dataRecordsLength = dataRecords.length,
+        csvArray = [];
+
+    var labels = keys.map(function(k) {
+        var label = k.trim();
+        if (regExp.test(label)) {
+            return '"' + label.replace(regExpTesto, '$1$1') + '"';
+        } else {
+            return label;
+        }
+    });
+    csvArray.push(labels.join(","));
+
+    for (var i=0; i < dataRecordsLength; i++) {
+        var values = [];
+
+        for (var j=0; j < keysLength; j++)  {
+            var value = dataRecords[i][keys[j]].value;
+            if (regExp.test(value)) {
+                value = '"' + value.replace(regExpTesto, '$1$1') + '"';
+            }
+
+            values.push(value);
+        }
+
+        csvArray.push(values.join(","));
+    }
+
+    return csvArray.join("\r\n");
+}
+
 function createTable(dataRecords) {
     var nOfRows = dataRecords.length;
     var fields = Object.keys(dataRecords[0]);
@@ -77,15 +113,20 @@ function exportData(event) {
 
     if (buttonId === "exportAsCSVButton") {
         exportDataType = "csv";
+        var dataRecords = convertToCSV(data.dataRecords);
+        var a = document.getElementById('downloadLink');
+        a.download="webdext_data.csv";
+        a.href='data:text/csv;charset=utf-8,%EF%BB%BF'+encodeURIComponent(dataRecords);
+        a.click();
+    } else {
+        chrome.runtime.sendMessage({
+            info: "dataExported",
+            data: {
+                dataType: exportDataType,
+                dataRecords: data.dataRecords
+            }
+        });
     }
-
-    chrome.runtime.sendMessage({
-        info: "dataExported",
-        data: {
-            dataType: exportDataType,
-            dataRecords: data.dataRecords
-        }
-    });
 }
 
 chrome.runtime.sendMessage({info: "wrapperExtractPageLoaded"}, function(response) {

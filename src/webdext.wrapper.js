@@ -22,20 +22,24 @@
                 var dataItem = evaluateXPath(dataItemXPath, dataRecordElement);
 
                 if (dataItem.length > 0) {
-                    var dataValue = dataItem[0].nodeValue,
+                    var dataNode = dataItem[0],
+                        dataValue,
                         dataType;
 
-                    if (dataItem[0].nodeType === Node.TEXT_NODE) {
+                    if (dataNode.nodeType === Node.TEXT_NODE) {
+                        dataValue = dataNode.nodeValue.trim();
                         dataType = "text";
-                    } else if (dataItem[0].nodeName.toLowerCase() === "href") {
+                    } else if (dataNode.nodeName.toLowerCase() === "href") {
+                        dataValue = dataNode.ownerElement.href;
                         dataType = "hyperlink";
-                    } else if (dataItem[0].nodeName.toLowerCase() === "src") {
+                    } else if (dataNode.nodeName.toLowerCase() === "src") {
+                        dataValue = dataNode.ownerElement.src;
                         dataType = "image";
-                    } else if (dataItem[0].tagName.toLowerCase() === "img") {
-                        dataValue = dataItem[0].src;
+                    } else if (dataNode.tagName.toLowerCase() === "img") {
+                        dataValue = dataNode.src;
                         dataType = "image";
                     } else {
-                        dataValue = dataItem[0].textContent;
+                        dataValue = dataNode.textContent.trim();
                         dataType = "text";
                     }
 
