@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Webdext",
   "description": "Intelligent Web Data Extractor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "permissions": [
     "activeTab",
     "storage"
