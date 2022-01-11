@@ -5,7 +5,6 @@
   "version": "0.0.3",
   "permissions": [
     "activeTab",
-    "tabs",
     "storage"
   ],
   "icons": {
